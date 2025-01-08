@@ -122,13 +122,26 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
+doc_events = {
+    "POS Opening Entry": {
+        "after_insert": "havano_pos_integration.api.submit_pos_opening_entry"
+    },
+    # "POS Closing Entry": {
+    #     "after_insert": "havano_pos_integration.api.submit_pos_closing_entry"
+    # },
+    "POS Invoice": {
+        "after_insert": "havano_pos_integration.api.submit_pos_invoice"
+    }
+}
+
+#doc_events = {
 # 	"*": {
 # 		"on_update": "method",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
 # 	}
-# }
+#    "POS Closing Entry": "havano_pos_integration.api.submit_pos_closing_entry"
+#}
 
 # Scheduled Tasks
 # ---------------
