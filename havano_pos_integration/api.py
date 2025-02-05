@@ -223,7 +223,7 @@ def get_user():
 @frappe.whitelist()
 def get_customer():
     # Fetch customer details with default price list
-    customers = frappe.get_all("Customer", filters = {"default_price_list": ["!=", ""]} ,fields = ["customer_name","customer_type","gender","customer_pos_id","default_price_list"])
+    customers = frappe.get_all("Customer", filters = {"default_price_list": ["!=", ""]} ,fields = ["customer_name","customer_type","custom_cost_center","custom_warehouse","gender","customer_pos_id","default_price_list"])
     for customer in customers:
         # Fetch item prices for each customer
         customer.items = frappe.get_all("Item Price", filters = {"price_list":customer.default_price_list}, fields = ["item_code","item_name","price_list_rate"])
@@ -244,4 +244,12 @@ def submit_pos_closing_entry(doc, method=None):
 
 def submit_pos_invoice(doc, method=None):
     # Submit POS Invoice document
+    doc.submit()
+
+def submit_payment_entry(doc, method=None):
+    # Submit Payment Entry document
+    doc.submit()
+
+def submit_sales_invoice(doc, method=None):
+    # Submit Sales Invoice document
     doc.submit()

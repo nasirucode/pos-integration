@@ -126,13 +126,29 @@ doc_events = {
     "POS Opening Entry": {
         "after_insert": "havano_pos_integration.api.submit_pos_opening_entry"
     },
-    # "POS Closing Entry": {
-    #     "after_insert": "havano_pos_integration.api.submit_pos_closing_entry"
-    # },
+    "POS Closing Entry": {
+        "after_insert": "havano_pos_integration.api.submit_pos_closing_entry"
+    },
     "POS Invoice": {
         "after_insert": "havano_pos_integration.api.submit_pos_invoice"
+    },
+    "Payment Entry": {
+        "after_insert": "havano_pos_integration.api.submit_payment_entry"
+    },
+    "Sales Invoice": {
+        "after_insert": "havano_pos_integration.api.submit_sales_invoice"
     }
 }
+
+fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["dt", "=", "Sales Invoice"],
+            # Optionally, you can filter by fieldname if necessary
+        ]
+    }
+]
 
 #doc_events = {
 # 	"*": {
