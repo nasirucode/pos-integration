@@ -1,8 +1,8 @@
 import frappe
 from frappe import _
-from utils import create_response
+from havano_pos_integration.utils import create_response
 
-@frappe.whitelist()
+# @frappe.whitelist()
 def test_api(name):
     # Create a welcome message
     try:
@@ -286,7 +286,7 @@ def get_account():
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching account data")
         return
-        
+
 def submit_pos_opening_entry(doc,method):
     # Submit POS Opening Entry document
     doc.submit()
