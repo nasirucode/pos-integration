@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 from havano_pos_integration.utils import create_response
 
-# @frappe.whitelist()
+@frappe.whitelist()
 def test_api(name):
     # Create a welcome message
     try:
@@ -285,6 +285,41 @@ def get_account():
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching account data")
+        return
+
+@frappe.whitelist()
+def get_currency_exchange_rate():
+    try:
+        from erpnext.setup.utils import get_exchange_rate
+        
+        # Get form data
+        data = frappe.local.form_dict
+        
+        # Get required parameters
+        from_currency = data.get("from_currency")
+        to_currency = data.get("to_currency")
+        transaction_date = data.get("transaction_date")
+        args = data.get("args")  # Optional: for_buying/for_selling
+        
+        # Get exchange rate using ERPNext's utility function
+        exchange_rate = get_exchange_rate(
+            from_currency=from_currency,
+            to_currency=to_currency, 
+            transaction_date=transaction_date,
+            args=args
+        )
+        
+        create_response("200", {
+            "exchange_rate": exchange_rate,
+            "from_currency": from_currency,
+            "to_currency": to_currency,
+            "date": transaction_date
+        })
+        return
+        
+    except Exception as e:
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error fetching exchange rate")
         return
 
 def submit_pos_opening_entry(doc,method):
