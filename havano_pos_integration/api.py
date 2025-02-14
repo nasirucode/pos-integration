@@ -399,6 +399,30 @@ def create_sales_invoice():
             ["custom_cost_center", "custom_warehouse"], 
             as_dict=1
         )
+
+        # Validate warehouse is not a group
+        warehouse_is_group = frappe.db.get_value("Warehouse", 
+            customer_data.custom_warehouse, 
+            "is_group"
+        )
+        
+        if warehouse_is_group:
+            frappe.throw(_("Warehouse {0} is a group warehouse. Please select a non-group warehouse.").format(customer_data.custom_warehouse))
+
+        # Check stock availability for each item
+        for item in data.get("items"):
+            actual_qty = frappe.db.get_value("Bin", 
+                {"item_code": item.get("item_code"), "warehouse": customer_data.custom_warehouse},
+                "actual_qty"
+            ) or 0
+            
+            if float(item.get("qty")) > actual_qty:
+                frappe.throw(_("Insufficient stock for {0} in {1}. Available quantity: {2}").format(
+                    item.get("item_code"),
+                    customer_data.custom_warehouse,
+                    actual_qty
+                ))
+
         # Create Sales Invoice with stock updates enabled
         sales_invoice = frappe.get_doc({
             "doctype": "Sales Invoice",
@@ -413,20 +437,16 @@ def create_sales_invoice():
                     "item_code": item.get("item_code"),
                     "rate": item.get("rate"),
                     "qty": item.get("qty"),
-                    # "update_stock": 1,
+                    "update_stock": 1,
                     "cost_center": customer_data.custom_cost_center,
                     "warehouse": customer_data.custom_warehouse
-
                 }
                 for item in data.get("items")
             ]
         })
 
-        # Insert and submit the document
         sales_invoice.insert()
         sales_invoice.submit()
-
-        # Commit the transaction
         frappe.db.commit()
         
         create_response("200", sales_invoice.as_dict())
