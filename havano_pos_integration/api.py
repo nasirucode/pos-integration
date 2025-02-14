@@ -327,7 +327,9 @@ def get_account():
         # Fetch account details
         accounts = frappe.get_all("Account", 
             filters={
-                "account_type": ["in", ["Cash", "Bank"]]
+                "account_type": ["in", ["Cash", "Bank"]],
+                "is_group": 0
+
             },
             fields=[
                 "name",
@@ -400,28 +402,36 @@ def create_sales_invoice():
             as_dict=1
         )
 
-        # Validate warehouse is not a group
-        warehouse_is_group = frappe.db.get_value("Warehouse", 
-            customer_data.custom_warehouse, 
-            "is_group"
-        )
-        
-        if warehouse_is_group:
-            frappe.throw(_("Warehouse {0} is a group warehouse. Please select a non-group warehouse.").format(customer_data.custom_warehouse))
-
-        # Check stock availability for each item
+        # Get available stock for each item
+        items_with_stock = []
         for item in data.get("items"):
-            actual_qty = frappe.db.get_value("Bin", 
+            bin_data = frappe.db.get_value("Bin",
                 {"item_code": item.get("item_code"), "warehouse": customer_data.custom_warehouse},
-                "actual_qty"
-            ) or 0
+                ["actual_qty", "warehouse"],
+                as_dict=1
+            )
             
-            if float(item.get("qty")) > actual_qty:
-                frappe.throw(_("Insufficient stock for {0} in {1}. Available quantity: {2}").format(
-                    item.get("item_code"),
-                    customer_data.custom_warehouse,
-                    actual_qty
-                ))
+            if not bin_data:
+                # If no bin exists, try to get default warehouse from Item
+                default_warehouse = frappe.db.get_value("Item Default",
+                    {"parent": item.get("item_code"), "company": data.get("company")},
+                    "default_warehouse"
+                )
+                if default_warehouse:
+                    bin_data = frappe.db.get_value("Bin",
+                        {"item_code": item.get("item_code"), "warehouse": default_warehouse},
+                        ["actual_qty", "warehouse"],
+                        as_dict=1
+                    )
+
+            if bin_data and bin_data.actual_qty >= float(item.get("qty")):
+                item["warehouse"] = bin_data.warehouse
+                items_with_stock.append(item)
+            else:
+                create_response("417", {
+                    "error": f"Insufficient stock for {item.get('item_code')}. Available quantity: {bin_data.actual_qty if bin_data else 0}"
+                })
+                return
 
         # Create Sales Invoice with stock updates enabled
         sales_invoice = frappe.get_doc({
@@ -439,9 +449,9 @@ def create_sales_invoice():
                     "qty": item.get("qty"),
                     "update_stock": 1,
                     "cost_center": customer_data.custom_cost_center,
-                    "warehouse": customer_data.custom_warehouse
+                    "warehouse": item.get("warehouse")
                 }
-                for item in data.get("items")
+                for item in items_with_stock
             ]
         })
 
