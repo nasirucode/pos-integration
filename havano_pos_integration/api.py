@@ -100,7 +100,7 @@ def get_warehouses():
 def get_cost_center():
     try:
         # Fetch cost center details
-        cost_center = frappe.get_all("Cost Center", fields = ["cost_center_name", "cost_center_number", "parent_cost_center", "company"])
+        cost_center = frappe.get_all("Cost Center", fields = ["name","cost_center_name", "cost_center_number", "parent_cost_center", "company"])
         create_response("200", cost_center)
         return
     except Exception as e:
@@ -433,7 +433,7 @@ def create_sales_invoice():
                 return
 
         # Fetch the latest version of the Sales Invoice document
-        sales_invoice = frappe.new_doc("Sales Invoice")
+        sales_invoice = frappe.get_doc("Sales Invoice")
         sales_invoice.update({
             "customer": data.get("customer"),
             "company": data.get("company"),
