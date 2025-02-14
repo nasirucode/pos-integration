@@ -434,8 +434,8 @@ def create_sales_invoice():
                 return
 
         # Create Sales Invoice with stock updates enabled
-        sales_invoice = frappe.get_doc({
-            "doctype": "Sales Invoice",
+        sales_invoice = frappe.new_doc("Sales Invoice")
+        sales_invoice.update({
             "customer": data.get("customer"),
             "company": data.get("company"),
             "update_stock": 1,
@@ -455,6 +455,8 @@ def create_sales_invoice():
             ]
         })
 
+        sales_invoice.flags.ignore_permissions = True
+        
         sales_invoice.insert()
         sales_invoice.submit()
         frappe.db.commit()
