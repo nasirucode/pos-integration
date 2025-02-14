@@ -335,7 +335,8 @@ def get_account():
                 "account_number",
                 "company",
                 "parent_account",
-                "account_type"
+                "account_type",
+                "currency"
             ]
         )
         create_response("200", accounts)
