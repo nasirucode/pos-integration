@@ -383,7 +383,6 @@ def get_currency_exchange_rate():
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching exchange rate")
         return
-
 @frappe.whitelist()
 def create_sales_invoice():
     try:
@@ -433,7 +432,7 @@ def create_sales_invoice():
                 })
                 return
 
-        # Create Sales Invoice with stock updates enabled
+        # Fetch the latest version of the Sales Invoice document
         sales_invoice = frappe.new_doc("Sales Invoice")
         sales_invoice.update({
             "customer": data.get("customer"),
@@ -457,18 +456,22 @@ def create_sales_invoice():
 
         sales_invoice.flags.ignore_permissions = True
         
-        sales_invoice.insert()
+        # Insert and submit the document
+        sales_invoice.insert(ignore_permissions=True)
         sales_invoice.submit()
         frappe.db.commit()
         
         create_response("200", sales_invoice.as_dict())
         return
 
+    except frappe.exceptions.ValidationError as e:
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error creating Sales Invoice")
+        return
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error creating Sales Invoice")
         return
-
 def submit_pos_opening_entry(doc,method):
     # Submit POS Opening Entry document
     doc.submit()
