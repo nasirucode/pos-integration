@@ -251,8 +251,39 @@ def get_sales_invoice():
 @frappe.whitelist()
 def get_user():
     try:
-        # Fetch user details
-        users = frappe.get_all("User", fields = ["email","first_name", "last_name", "username", "gender","location"])
+        users = frappe.get_all("User", 
+            fields=["email", "first_name", "last_name", "username", "gender", "location"])
+        
+        for user in users:
+            sales_invoices = frappe.get_all("Sales Invoice",
+                filters={"owner": user.email},
+                fields=[
+                    "name", 
+                    "posting_date",
+                    "posting_time", 
+                    "due_date",
+                    "customer",
+                    "customer_name",
+                    "company",
+                    "total_qty",
+                    "total",
+                    "total_taxes_and_charges", 
+                    "grand_total",
+                    "status"
+                ]
+            )
+            
+            for invoice in sales_invoices:
+                # Get items for each invoice
+                invoice.items = frappe.get_all("Sales Invoice Item",
+                    filters={"parent": invoice.name},
+                    fields=["item_name", "qty", "rate", "amount"]
+                )
+            
+            user["sales_invoices"] = sales_invoices
+            user["total_sales"] = sum(invoice.grand_total for invoice in sales_invoices)
+            user["total_invoices"] = len(sales_invoices)
+            
         create_response("200", users)
         return
     except Exception as e:
@@ -279,9 +310,21 @@ def get_customer():
 def get_account():
     try:
         # Fetch account details
-        accounts = frappe.get_all("Account", fields = ["account_name","account_number","company","parent_account","account_type"])
+        accounts = frappe.get_all("Account", 
+            filters={
+                "account_type": ["in", ["Cash", "Bank"]]
+            },
+            fields=[
+                "account_name",
+                "account_number",
+                "company",
+                "parent_account",
+                "account_type"
+            ]
+        )
         create_response("200", accounts)
         return
+
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching account data")
@@ -320,6 +363,48 @@ def get_currency_exchange_rate():
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching exchange rate")
+        return
+
+@frappe.whitelist()
+def create_sales_invoice():
+    try:
+        data = frappe.local.form_dict
+
+        # Validate required fields
+        required_fields = ["customer", "company", "items"]
+        for field in required_fields:
+            if field not in data:
+                frappe.throw(_("Missing required field: {0}").format(field))
+
+        # Create Sales Invoice
+        sales_invoice = frappe.get_doc({
+            "doctype": "Sales Invoice",
+            "customer": data.get("customer"),
+            "company": data.get("company"),
+            "items": [
+                {
+                    "item_name": item.get("item_name"),
+                    "item_code": item.get("item_code"),
+                    "rate": item.get("rate"),
+                    "qty": item.get("qty")
+                }
+                for item in data.get("items")
+            ]
+        })
+
+        # Insert and submit the document
+        sales_invoice.insert()
+        sales_invoice.submit()
+
+        # Commit the transaction
+        frappe.db.commit()
+        
+        create_response("200", sales_invoice.as_dict())
+        return
+
+    except Exception as e:
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error creating Sales Invoice")
         return
 
 def submit_pos_opening_entry(doc,method):
