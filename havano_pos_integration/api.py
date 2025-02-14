@@ -218,14 +218,26 @@ def get_products():
         return
 
 @frappe.whitelist()
-def get_sales_invoice():
+def get_sales_invoice(user=None):
     try:
-        # Fetch sales invoice details
         final_invoice = []
-        sales_invoice_list =  frappe.get_all("Sales Invoice", fields = ["name", "customer","company", "customer_name", "posting_date", "posting_time","due_date","total_qty","total","total_taxes_and_charges","grand_total"])
+        # Return all invoices if user is Administrator, else filter by user
+        filters = {} if user == "Administrator" else {"owner": user} if user else {}
+        
+        sales_invoice_list = frappe.get_all("Sales Invoice", 
+            filters=filters,
+            fields=[
+                "name", "customer", "company", "customer_name",
+                "posting_date", "posting_time", "due_date",
+                "total_qty", "total", "total_taxes_and_charges",
+                "grand_total", "owner", "modified_by"
+            ])
+        
         for invoice in sales_invoice_list:
-            # Fetch items for each invoice
-            items = frappe.get_all("Sales Invoice Item", filters={"parent": invoice.name},fields = ["item_name", "qty", "rate", "amount",])
+            items = frappe.get_all("Sales Invoice Item", 
+                filters={"parent": invoice.name},
+                fields=["item_name", "qty", "rate", "amount"])
+                
             invoice = {
                 "name": invoice.name,
                 "customer": invoice.customer,
@@ -238,9 +250,12 @@ def get_sales_invoice():
                 "total_qty": invoice.total_qty,
                 "total": invoice.total,
                 "total_taxes_and_charges": invoice.total_taxes_and_charges,
-                "grand_total": invoice.grand_total
+                "grand_total": invoice.grand_total,
+                "created_by": invoice.owner,
+                "last_modified_by": invoice.modified_by
             }
             final_invoice.append(invoice)
+            
         create_response("200", final_invoice)
         return
     except Exception as e:
@@ -315,6 +330,7 @@ def get_account():
                 "account_type": ["in", ["Cash", "Bank"]]
             },
             fields=[
+                "name",
                 "account_name",
                 "account_number",
                 "company",
