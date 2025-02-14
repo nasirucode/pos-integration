@@ -393,17 +393,30 @@ def create_sales_invoice():
             if field not in data:
                 frappe.throw(_("Missing required field: {0}").format(field))
 
-        # Create Sales Invoice
+        # Get customer's custom settings
+        customer_data = frappe.db.get_value("Customer", 
+            data.get("customer"), 
+            ["custom_cost_center", "custom_warehouse"], 
+            as_dict=1
+        )
+        # Create Sales Invoice with stock updates enabled
         sales_invoice = frappe.get_doc({
             "doctype": "Sales Invoice",
             "customer": data.get("customer"),
             "company": data.get("company"),
+            "update_stock": 1,
+            "cost_center": customer_data.custom_cost_center,
+            "set_warehouse": customer_data.custom_warehouse,
             "items": [
                 {
                     "item_name": item.get("item_name"),
                     "item_code": item.get("item_code"),
                     "rate": item.get("rate"),
-                    "qty": item.get("qty")
+                    "qty": item.get("qty"),
+                    # "update_stock": 1,
+                    "cost_center": customer_data.custom_cost_center,
+                    "warehouse": customer_data.custom_warehouse
+
                 }
                 for item in data.get("items")
             ]
