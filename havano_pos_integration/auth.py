@@ -50,6 +50,9 @@ def login(usr,pwd):
     default_cost_center = frappe.db.get_value("User Permission",
         {"user": user.name, "allow": "Cost Center", "is_default": 1}, "for_value")
 
+    default_customer = frappe.db.get_value("User Permission",
+        {"user": user.name, "allow": "Customer", "is_default": 1}, "for_value") 
+
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 
@@ -63,8 +66,9 @@ def login(usr,pwd):
         "username":user.username or "",
         "full_name":user.full_name or "",
         "email":user.email or "",
-        "warehouses": default_warehouse,
-        "cost_centers": default_cost_center,
+        "warehouse": default_warehouse,
+        "cost_center": default_cost_center,
+        "customer": default_customer,   
         "company" : {
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
