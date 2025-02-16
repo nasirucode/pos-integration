@@ -44,8 +44,11 @@ def login(usr,pwd):
         },
         pluck="for_value"
     )
-    default_warehouse = frappe.db.get_value("User", user.name, "default_warehouse")
-    default_cost_center = frappe.db.get_value("User", user.name, "default_cost_center")
+    default_warehouse = frappe.db.get_value("User Permission", 
+        {"user": user.name, "allow": "Warehouse", "is_default": 1}, "for_value")
+    
+    default_cost_center = frappe.db.get_value("User Permission",
+        {"user": user.name, "allow": "Cost Center", "is_default": 1}, "for_value")
 
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
