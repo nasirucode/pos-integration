@@ -28,6 +28,23 @@ def login(usr,pwd):
        
     token_string = str(api_generate['api_key']) +":"+ str(api_generate['api_secret'])
 
+    # Get user permissions for warehouse and cost center
+    warehouses = frappe.get_list("User Permission", 
+        filters={
+            "user": user.name,
+            "allow": "Warehouse"
+        },
+        pluck="for_value"
+    )
+    
+    cost_centers = frappe.get_list("User Permission",
+        filters={
+            "user": user.name, 
+            "allow": "Cost Center"
+        },
+        pluck="for_value"
+    )
+
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 
@@ -41,6 +58,8 @@ def login(usr,pwd):
         "username":user.username or "",
         "full_name":user.full_name or "",
         "email":user.email or "",
+        "warehouses": warehouses,
+        "cost_centers": cost_centers,
         "company" : {
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
