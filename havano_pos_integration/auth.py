@@ -53,6 +53,23 @@ def login(usr,pwd):
     default_customer = frappe.db.get_value("User Permission",
         {"user": user.name, "allow": "Customer", "is_default": 1}, "for_value") 
 
+    # Get items and their quantities from default warehouse
+    warehouse_items = []
+    if default_warehouse:
+        warehouse_items = frappe.db.sql("""
+            SELECT 
+                item.item_code,
+                item.item_name,
+                item.description,
+                bin.actual_qty,
+                bin.projected_qty,
+                uom.uom
+            FROM `tabItem` item
+            LEFT JOIN `tabBin` bin ON bin.item_code = item.item_code 
+            LEFT JOIN `tabUOM` uom ON uom.name = item.stock_uom
+            WHERE bin.warehouse = %s
+        """, default_warehouse, as_dict=1)
+
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 
@@ -68,7 +85,8 @@ def login(usr,pwd):
         "email":user.email or "",
         "warehouse": default_warehouse,
         "cost_center": default_cost_center,
-        "customer": default_customer,   
+        "customer": default_customer,
+        "warehouse_items": warehouse_items,
         "company" : {
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
