@@ -44,6 +44,8 @@ def login(usr,pwd):
         },
         pluck="for_value"
     )
+    default_warehouse = frappe.db.get_value("User", user.name, "default_warehouse")
+    default_cost_center = frappe.db.get_value("User", user.name, "default_cost_center")
 
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
@@ -58,8 +60,8 @@ def login(usr,pwd):
         "username":user.username or "",
         "full_name":user.full_name or "",
         "email":user.email or "",
-        "warehouses": warehouses,
-        "cost_centers": cost_centers,
+        "warehouses": default_warehouse,
+        "cost_centers": default_cost_center,
         "company" : {
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
