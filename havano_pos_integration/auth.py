@@ -61,12 +61,11 @@ def login(usr,pwd):
                 item.item_code,
                 item.item_name,
                 item.description,
+                item.stock_uom,
                 bin.actual_qty,
-                bin.projected_qty,
-                uom.uom
+                bin.projected_qty
             FROM `tabItem` item
             LEFT JOIN `tabBin` bin ON bin.item_code = item.item_code 
-            LEFT JOIN `tabUOM` uom ON uom.name = item.stock_uom
             WHERE bin.warehouse = %s
         """, default_warehouse, as_dict=1)
 
