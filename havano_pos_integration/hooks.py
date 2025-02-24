@@ -28,7 +28,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Landed Cost Voucher" : "custom_scripts/landed_cost_voucher.js",
+    "Salary Slip": "custom_scripts/salary_slip.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -135,9 +138,12 @@ doc_events = {
     "Payment Entry": {
         "after_insert": "havano_pos_integration.api.submit_payment_entry"
     },
-    "Sales Invoice": {
-        "after_insert": "havano_pos_integration.api.submit_sales_invoice"
-    }
+    "Salary Slip": {
+        "validate": "havano_pos_integration.custom_scripts.salary_slip.validate"
+    },
+    # "Sales Invoice": {
+    #     "after_insert": "havano_pos_integration.api.submit_sales_invoice"
+    # }
 }
 
 fixtures = [

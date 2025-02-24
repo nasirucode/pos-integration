@@ -90,8 +90,9 @@ def login(usr,pwd):
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
             "website" : default_company_doc.website or ""
-        }
+        },
     }
+    frappe.response["token_string"] = token_string
     frappe.response["token"] =  base64.b64encode(token_string.encode("ascii")).decode("utf-8")
 
     return

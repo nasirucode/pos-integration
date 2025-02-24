@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 from havano_pos_integration.utils import create_response
+from frappe.utils import now_datetime
 
 @frappe.whitelist()
 def test_api(name):
@@ -383,95 +384,46 @@ def get_currency_exchange_rate():
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching exchange rate")
         return
+
 @frappe.whitelist()
 def create_sales_invoice():
+    invoice_data = frappe.local.form_dict
     try:
-        data = frappe.local.form_dict
-
-        # Validate required fields
-        required_fields = ["customer", "company", "items"]
-        for field in required_fields:
-            if field not in data:
-                frappe.throw(_("Missing required field: {0}").format(field))
-
-        # Get customer's custom settings
-        customer_data = frappe.db.get_value("Customer", 
-            data.get("customer"), 
-            ["custom_cost_center", "custom_warehouse"], 
-            as_dict=1
-        )
-
-        # Get available stock for each item
-        items_with_stock = []
-        for item in data.get("items"):
-            bin_data = frappe.db.get_value("Bin",
-                {"item_code": item.get("item_code"), "warehouse": customer_data.custom_warehouse},
-                ["actual_qty", "warehouse"],
-                as_dict=1
-            )
-            
-            if not bin_data:
-                # If no bin exists, try to get default warehouse from Item
-                default_warehouse = frappe.db.get_value("Item Default",
-                    {"parent": item.get("item_code"), "company": data.get("company")},
-                    "default_warehouse"
-                )
-                if default_warehouse:
-                    bin_data = frappe.db.get_value("Bin",
-                        {"item_code": item.get("item_code"), "warehouse": default_warehouse},
-                        ["actual_qty", "warehouse"],
-                        as_dict=1
-                    )
-
-            if bin_data and bin_data.actual_qty >= float(item.get("qty")):
-                item["warehouse"] = bin_data.warehouse
-                items_with_stock.append(item)
-            else:
-                create_response("417", {
-                    "error": f"Insufficient stock for {item.get('item_code')}. Available quantity: {bin_data.actual_qty if bin_data else 0}"
-                })
-                return
-
-        # Fetch the latest version of the Sales Invoice document
-        sales_invoice = frappe.get_doc("Sales Invoice")
-        sales_invoice.update({
-            "customer": data.get("customer"),
-            "company": data.get("company"),
-            "update_stock": 1,
-            "cost_center": customer_data.custom_cost_center,
-            "set_warehouse": customer_data.custom_warehouse,
+        si_doc = frappe.get_doc({
+            "doctype": "Sales Invoice",
+            "customer": invoice_data.get("customer"),
+            "company": invoice_data.get("company"),
+            "set_warehouse": invoice_data.get("set_warehouse"),
+            "cost_center": invoice_data.get("cost_center"),
+            "update_stock": invoice_data.get("update_stock"),
             "items": [
                 {
                     "item_name": item.get("item_name"),
                     "item_code": item.get("item_code"),
                     "rate": item.get("rate"),
                     "qty": item.get("qty"),
-                    "update_stock": 1,
-                    "cost_center": customer_data.custom_cost_center,
-                    "warehouse": item.get("warehouse")
+                    "cost_center": item.get("cost_center")
                 }
-                for item in items_with_stock
+                for item in invoice_data.get("items", [])
             ]
         })
-
-        sales_invoice.flags.ignore_permissions = True
         
-        # Insert and submit the document
-        sales_invoice.insert(ignore_permissions=True)
-        sales_invoice.submit()
-        frappe.db.commit()
+        si_doc.insert()
+        si_doc.submit()
         
-        create_response("200", sales_invoice.as_dict())
-        return
-
-    except frappe.exceptions.ValidationError as e:
-        create_response("417", {"error": str(e)})
-        frappe.log_error(message=str(e), title="Error creating Sales Invoice")
-        return
+        return {
+            "status": "success",
+            "message": "Sales Invoice created successfully",
+            "invoice_name": si_doc.name
+        }
+    
     except Exception as e:
-        create_response("417", {"error": str(e)})
-        frappe.log_error(message=str(e), title="Error creating Sales Invoice")
-        return
+        frappe.log_error(frappe.get_traceback(), "Sales Invoice Creation Error")
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
 def submit_pos_opening_entry(doc,method):
     # Submit POS Opening Entry document
     doc.submit()
