@@ -158,10 +158,7 @@ def get_products():
     try:
         # Fetch all necessary data
         product_details = frappe.get_all("Item", 
-            filters=[
-                ["Item", "is_stock_item", "=", 1],
-                ["Item", "item_group", "in", "Products"]
-            ],
+            filters={"is_stock_item": 1},
             fields=["name", "item_code", "item_group"]
         )
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
