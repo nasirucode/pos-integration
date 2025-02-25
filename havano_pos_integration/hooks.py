@@ -146,15 +146,20 @@ doc_events = {
     # }
 }
 
-fixtures = [
-    {
-        "dt": "Custom Field",
-        "filters": [
-            ["dt", "=", "Sales Invoice"],
-            # Optionally, you can filter by fieldname if necessary
-        ]
-    }
-]
+# fixtures = [
+#     {
+#         "dt": "Custom Field",
+#         "filters": [
+#             ["dt", "=", "Sales Invoice"],
+#             ["dt", "=", "Salary Slip"],
+#             ["dt", "=", "Income Tax Slab"],
+#             ["dt", "=", "Taxable Salary Slab"],
+#             # Optionally, you can filter by fieldname if necessary
+#         ]
+#     }
+# ]
+
+fixtures = ["Custom Field"]
 
 #doc_events = {
 # 	"*": {
