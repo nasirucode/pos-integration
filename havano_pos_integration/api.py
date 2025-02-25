@@ -159,7 +159,7 @@ def get_products():
         # Fetch all necessary data
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
-        product_details = frappe.get_all("Item", fields=["name", "item_code", "item_group"])
+        product_details = frappe.get_all("Item", filters={"is_stock_item": 1, "item_group": "Products" }, fields=["name", "item_code", "item_group"])
         
         # Initialize products dictionary with all items
         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
