@@ -159,7 +159,7 @@ def get_products():
         # Fetch all necessary data
         product_details = frappe.db.get_all("Item", 
             filters={
-                'item_group': 'Products'
+                # 'item_group': 'Products'
             },
             fields=["name", "item_code", "item_group"]
         )
