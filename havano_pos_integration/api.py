@@ -160,7 +160,7 @@ def get_products():
         product_details = frappe.get_all("Item", 
             filters=[
                 ["Item", "is_stock_item", "=", 1],
-                ["Item", "item_group", "=", "Products"]
+                ["Item", "item_group", "in", "Products"]
             ],
             fields=["name", "item_code", "item_group"]
         )
