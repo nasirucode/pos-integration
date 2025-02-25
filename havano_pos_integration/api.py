@@ -159,8 +159,8 @@ def get_products():
         # Fetch all necessary data
         product_details = frappe.get_all("Item", 
             filters={
-                "is_stock_item": 1,  # Only items that maintain stock
-                "item_group": "Products"  # Only items in Products group
+                ["is_stock_item", "=", 1],
+                ["item_group", "=", "Products"]
             },
             fields=["name", "item_code", "item_group"]
         )
