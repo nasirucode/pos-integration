@@ -7,10 +7,19 @@ def validate(doc, method):
     calculate_tax(doc)
 
 def calculate_nssa(doc):
+    nssa_exists = False
     for row in doc.deductions:
         if row.salary_component == 'NSSA':
             gross_pay = doc.gross_pay or 0
             row.amount = gross_pay * 0.045
+            nssa_exists = True
+
+    if not nssa_exists:
+        gross_pay = doc.gross_pay or 0
+        doc.append('deductions', {
+            'salary_component': 'NSSA',
+            'amount': gross_pay * 0.045
+        })
 
 def update_total_deductions(doc):
     total = 0
