@@ -61,6 +61,7 @@ def calculate_tax(doc):
             break
 
     payee_exists = False
+    aids_levy_exists = False
 
     # Update PAYEE component in deductions
     for row in doc.deductions:
@@ -69,12 +70,18 @@ def calculate_tax(doc):
             payee_exists = True
         if row.salary_component == 'Aids Levy':
             row.amount = total_tax * 0.03
+            aids_levy_exists = True
 
     # Add PAYEE if it doesn't exist
     if not payee_exists:
         doc.append('deductions', {
             'salary_component': 'Payee',
             'amount': total_tax
+        })
+    if not aids_levy_exists:
+        doc.append('deductions', {
+            'salary_component': 'Aids Levy',
+            'amount': total_tax * 0.03
         })
     
     update_total_deductions(doc)
