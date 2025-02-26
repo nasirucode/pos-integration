@@ -223,6 +223,7 @@ def get_pos_profile():
 #         create_response("417", {"error": str(e)})
 #         frappe.log_error(message=str(e), title="Error fetching products data")
 #         return
+
 @frappe.whitelist()
 def get_products():
     try:
@@ -231,7 +232,7 @@ def get_products():
             filters={
                 'item_group': ["=", 'Products']
             },
-            fields=["name", "item_code", "item_group"]
+            fields=["name", "item_code", "item_group", "is_stock_item"]
         )
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
@@ -239,15 +240,16 @@ def get_products():
         # Initialize products dictionary with all items
         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
 
-        # # Add warehouse data
+        # Add warehouse data
         for product in products_data:
             item_code = product["item_code"]
-            products[item_code]["warehouses"].append({
-                "warehouse": product["warehouse"],
-                "qtyOnHand": product["actual_qty"]
-            })
+            if item_code in products:
+                products[item_code]["warehouses"].append({
+                    "warehouse": product["warehouse"],
+                    "qtyOnHand": product["actual_qty"]
+                })
         
-        # # Add price list data
+        # Add price list data
         for price in price_lists:
             item_code = price["item_code"]
             if item_code in products:
@@ -256,40 +258,21 @@ def get_products():
                     "price": price["price_list_rate"]
                 })
         
-        # # Compile final products list with defaults
+        # Compile final products list
         final_products = []
         for detail in product_details:
-        #     defaults = frappe.get_all("Item Default", filters={"parent": detail.name}, fields=["default_warehouse", "default_price_list"])
-        #     item_code = detail["item_code"]
-
-        #     warehouses = products[item_code]["warehouses"]
-        #     prices = products[item_code]["prices"]
-
-        # #     # Add default warehouse if no warehouse data
-        #     if not warehouses and defaults:
-        #         warehouses.append({
-        #             "warehouse": defaults[0].get("default_warehouse"),
-        #             "qtyOnHand": 0
-        #         })
-            
-        # #     # Add default price list if no price data
-        #     if not prices and defaults:
-        #         prices.append({
-        #             "priceName": defaults[0].get("default_price_list"),
-        #             "price": 0
-        #         })
-            
+            item_code = detail["item_code"]
             final_product = {
-                "itemcode": detail["item_code"],
+                "itemcode": item_code,
                 "itemname": detail["name"],
                 "groupname": detail["item_group"],
-                # "maintainStock": detail["is_stock_item"],
-                # "warehouses": warehouses,
-                # "prices": prices
-                # "prices": defaults[0].get("default_price_list")
+                "maintainstock": detail["is_stock_item"],
+                "warehouses": products[item_code]["warehouses"],
+                "prices": products[item_code]["prices"]
             }
             final_products.append(final_product)
-        create_response("200", {"products": product_details})
+        
+        create_response("200", {"products": final_products})
         return
     except Exception as e:
         create_response("417", {"error": str(e)})
