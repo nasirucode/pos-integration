@@ -284,10 +284,10 @@ def get_products():
                 "groupname": detail["item_group"],
                 "maintainStock": detail["is_stock_item"],
                 "warehouses": warehouses,
-                "prices": defaults[0].get("default_price_list")
+                # "prices": defaults[0].get("default_price_list")
             }
             final_products.append(final_product)
-        create_response("200", {"products": final_product})
+        create_response("200", {"products": [final_product]})
         return
     except Exception as e:
         create_response("417", {"error": str(e)})
