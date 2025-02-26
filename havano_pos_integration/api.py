@@ -227,11 +227,11 @@ def get_pos_profile():
 def get_products():
     try:
         # Fetch all necessary data for products in the "Products" item group
-        product_details = frappe.db.get_all("Item", 
+        product_details = frappe.get_all("Item", 
             filters={
                 'item_group': 'Products'
             },
-            fields=["name", "item_code", "item_group", "is_stock_item"]
+            fields=["name", "item_code", "item_group"]
         )
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
