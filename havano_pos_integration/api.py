@@ -282,7 +282,7 @@ def get_products():
                 "itemcode": item_code,
                 "itemname": detail["name"],
                 "groupname": detail["item_group"],
-                "maintainStock": detail["is_stock_item"]
+                "maintainStock": detail["is_stock_item"],
                 "warehouses": warehouses,
                 "prices": prices
             }
