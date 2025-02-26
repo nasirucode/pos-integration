@@ -229,7 +229,7 @@ def get_products():
         # Fetch all necessary data for products in the "Products" item group
         product_details = frappe.get_all("Item", 
             filters={
-                'item_group': 'Products'
+                ['item_group', "=", 'Products']
             },
             fields=["name", "item_code", "item_group"]
         )
