@@ -248,12 +248,12 @@ def get_products():
             })
         
         # # Add price list data
-        for price in price_lists:
-            item_code = price["item_code"]
-            products[item_code]["prices"].append({
-                "priceName": price["price_list"],
-                "price": price["price_list_rate"]
-            })
+        # for price in price_lists:
+        #     item_code = price["item_code"]
+        #     products[item_code]["prices"].append({
+        #         "priceName": price["price_list"],
+        #         "price": price["price_list_rate"]
+        #     })
         
         # # Compile final products list with defaults
         final_products = []
@@ -262,14 +262,14 @@ def get_products():
             item_code = detail["item_code"]
 
             warehouses = products[item_code]["warehouses"]
-            prices = products[item_code]["prices"]
+            # prices = products[item_code]["prices"]
 
         #     # Add default warehouse if no warehouse data
-        #     if not warehouses and defaults:
-        #         warehouses.append({
-        #             "warehouse": defaults[0].get("default_warehouse"),
-        #             "qtyOnHand": 0
-        #         })
+            if not warehouses and defaults:
+                warehouses.append({
+                    "warehouse": defaults[0].get("default_warehouse"),
+                    "qtyOnHand": 0
+                })
             
         #     # Add default price list if no price data
         #     if not prices and defaults:
@@ -284,7 +284,7 @@ def get_products():
                 "groupname": detail["item_group"],
                 "maintainStock": detail["is_stock_item"],
                 "warehouses": warehouses,
-                "prices": prices
+                # "prices": prices
             }
             final_products.append(final_product)
         create_response("200", {"products": final_product})
