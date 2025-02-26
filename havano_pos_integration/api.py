@@ -251,8 +251,8 @@ def get_products():
         for price in price_lists:
             item_code = price["item_code"]
             products[item_code]["prices"].append({
-                "priceName": price["price_list"],
-                "price": price["price_list_rate"]
+                "priceName": '0',#price["price_list"],
+                "price": '1'#price["price_list_rate"]
             })
         
         # # Compile final products list with defaults
@@ -262,7 +262,7 @@ def get_products():
             item_code = detail["item_code"]
 
             warehouses = products[item_code]["warehouses"]
-            # prices = products[item_code]["prices"]
+            prices = products[item_code]["prices"]
 
         #     # Add default warehouse if no warehouse data
             if not warehouses and defaults:
@@ -272,11 +272,11 @@ def get_products():
                 })
             
         #     # Add default price list if no price data
-        #     if not prices and defaults:
-        #         prices.append({
-        #             "priceName": defaults[0].get("default_price_list"),
-        #             "price": 0
-        #         })
+            if not prices and defaults:
+                prices.append({
+                    "priceName": defaults[0].get("default_price_list"),
+                    "price": 0
+                })
             
             final_product = {
                 "itemcode": item_code,
