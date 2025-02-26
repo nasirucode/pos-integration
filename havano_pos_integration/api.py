@@ -248,46 +248,48 @@ def get_products():
             })
         
         # # Add price list data
-        # for price in price_lists:
-        #     item_code = price["item_code"]
-        #     products[item_code]["prices"].append({
-        #         "priceName": '0',#price["price_list"],
-        #         "price": '1'#price["price_list_rate"]
-        #     })
+        for price in price_lists:
+            item_code = price["item_code"]
+            if item_code in products:
+                products[item_code]["prices"].append({
+                    "priceName": price["price_list"],
+                    "price": price["price_list_rate"]
+                })
         
         # # Compile final products list with defaults
         final_products = []
         for detail in product_details:
-            defaults = frappe.get_all("Item Default", filters={"parent": detail.name}, fields=["default_warehouse", "default_price_list"])
-            item_code = detail["item_code"]
+        #     defaults = frappe.get_all("Item Default", filters={"parent": detail.name}, fields=["default_warehouse", "default_price_list"])
+        #     item_code = detail["item_code"]
 
-            warehouses = products[item_code]["warehouses"]
-            prices = products[item_code]["prices"]
+        #     warehouses = products[item_code]["warehouses"]
+        #     prices = products[item_code]["prices"]
 
-        #     # Add default warehouse if no warehouse data
-            if not warehouses and defaults:
-                warehouses.append({
-                    "warehouse": defaults[0].get("default_warehouse"),
-                    "qtyOnHand": 0
-                })
+        # #     # Add default warehouse if no warehouse data
+        #     if not warehouses and defaults:
+        #         warehouses.append({
+        #             "warehouse": defaults[0].get("default_warehouse"),
+        #             "qtyOnHand": 0
+        #         })
             
-        #     # Add default price list if no price data
-            if not prices and defaults:
-                prices.append({
-                    "priceName": defaults[0].get("default_price_list"),
-                    "price": 0
-                })
+        # #     # Add default price list if no price data
+        #     if not prices and defaults:
+        #         prices.append({
+        #             "priceName": defaults[0].get("default_price_list"),
+        #             "price": 0
+        #         })
             
             final_product = {
-                "itemcode": item_code,
+                "itemcode": detail["item_code"],
                 "itemname": detail["name"],
                 "groupname": detail["item_group"],
                 "maintainStock": detail["is_stock_item"],
-                "warehouses": warehouses,
+                # "warehouses": warehouses,
+                # "prices": prices
                 # "prices": defaults[0].get("default_price_list")
             }
             final_products.append(final_product)
-        create_response("200", {"products": [final_product]})
+        create_response("200", {"products": final_product})
         return
     except Exception as e:
         create_response("417", {"error": str(e)})
