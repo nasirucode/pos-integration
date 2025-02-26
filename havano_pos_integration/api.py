@@ -231,7 +231,7 @@ def get_products():
             filters={
                 'item_group': 'Products'
             },
-            fields=["name", "item_code", "item_group"]
+            fields=["name", "item_code", "item_group", "is_stock_item"]
         )
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
@@ -292,7 +292,7 @@ def get_products():
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching products data")
         return
-        
+
 @frappe.whitelist()
 def get_sales_invoice(user=None):
     try:
