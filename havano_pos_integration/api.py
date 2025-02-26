@@ -248,12 +248,12 @@ def get_products():
             })
         
         # # Add price list data
-        # for price in price_lists:
-        #     item_code = price["item_code"]
-        #     products[item_code]["prices"].append({
-        #         "priceName": price["price_list"],
-        #         "price": price["price_list_rate"]
-        #     })
+        for price in price_lists:
+            item_code = price["item_code"]
+            products[item_code]["prices"].append({
+                "priceName": price["price_list"],
+                "price": price["price_list_rate"]
+            })
         
         # # Compile final products list with defaults
         final_products = []
@@ -261,8 +261,8 @@ def get_products():
             defaults = frappe.get_all("Item Default", filters={"parent": detail.name}, fields=["default_warehouse", "default_price_list"])
             item_code = detail["item_code"]
 
-        #     warehouses = products[item_code]["warehouses"]
-        #     prices = products[item_code]["prices"]
+            warehouses = products[item_code]["warehouses"]
+            prices = products[item_code]["prices"]
 
         #     # Add default warehouse if no warehouse data
         #     if not warehouses and defaults:
@@ -283,8 +283,8 @@ def get_products():
                 "itemname": detail["name"],
                 "groupname": detail["item_group"],
                 "maintainStock": detail["is_stock_item"]
-                # "warehouses": warehouses,
-                # "prices": prices
+                "warehouses": warehouses,
+                "prices": prices
             }
             final_products.append(final_product)
         create_response("200", {"products": final_product})
