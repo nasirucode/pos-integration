@@ -272,11 +272,11 @@ def get_products():
                 })
             
         #     # Add default price list if no price data
-            # if not prices and defaults:
-            #     prices.append({
-            #         "priceName": defaults[0].get("default_price_list"),
-            #         "price": 0
-            #     })
+            if not prices and defaults:
+                prices.append({
+                    "priceName": defaults[0].get("default_price_list"),
+                    "price": 0
+                })
             
             final_product = {
                 "itemcode": item_code,
@@ -284,7 +284,7 @@ def get_products():
                 "groupname": detail["item_group"],
                 "maintainStock": detail["is_stock_item"],
                 "warehouses": warehouses,
-                "prices": prices
+                "prices": defaults[0].get("default_price_list")
             }
             final_products.append(final_product)
         create_response("200", {"products": final_product})
