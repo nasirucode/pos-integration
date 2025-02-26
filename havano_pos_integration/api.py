@@ -289,7 +289,7 @@ def get_products():
                 # "prices": defaults[0].get("default_price_list")
             }
             final_products.append(final_product)
-        create_response("200", {"products": final_product})
+        create_response("200", {"products": product_details})
         return
     except Exception as e:
         create_response("417", {"error": str(e)})
