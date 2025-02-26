@@ -248,12 +248,12 @@ def get_products():
             })
         
         # # Add price list data
-        # for price in price_lists:
-        #     item_code = price["item_code"]
-        #     products[item_code]["prices"].append({
-        #         "priceName": price["price_list"],
-        #         "price": price["price_list_rate"]
-        #     })
+        for price in price_lists:
+            item_code = price["item_code"]
+            products[item_code]["prices"].append({
+                "priceName": price["price_list"],
+                "price": price["price_list_rate"]
+            })
         
         # # Compile final products list with defaults
         final_products = []
