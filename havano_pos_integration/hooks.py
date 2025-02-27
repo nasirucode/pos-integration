@@ -8,7 +8,9 @@ app_license = "mit"
 
 # Includes in <head>
 # ------------------
-
+app_include_js = [
+    "/assets/havano_pos_integration/reports/stock_ledger.js"
+]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/havano_pos_integration/css/havano_pos_integration.css"
 # app_include_js = "/assets/havano_pos_integration/js/havano_pos_integration.js"
@@ -30,9 +32,12 @@ app_license = "mit"
 # include js in doctype views
 doctype_js = {
     "Landed Cost Voucher" : "custom_scripts/landed_cost_voucher.js",
-    "Salary Slip": "custom_scripts/salary_slip.js"
+    "Salary Slip": "custom_scripts/salary_slip.js",
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+   "Sales Invoice": "custom_scripts/sales_invoice_list.js",
+}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
