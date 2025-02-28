@@ -423,7 +423,7 @@ def create_payment_entry():
     payment_data = frappe.local.form_dict
     try:
         # Create Payment Entry document using frappe.client.insert
-        pe_doc = frappe.client.insert({
+        pe_doc = frappe.new_doc({
             "doctype": "Payment Entry",
             "payment_type": payment_data.get("payment_type"),
             "company": payment_data.get("company"),
@@ -444,7 +444,7 @@ def create_payment_entry():
                     "allocated_amount": payment_data.get("allocated_amount")
                 }
             ]
-        })
+        }).insert()
         
         # Submit the Payment Entry document
         pe_doc.submit()
