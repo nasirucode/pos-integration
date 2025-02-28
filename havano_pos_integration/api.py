@@ -416,6 +416,51 @@ def create_sales_invoice():
             "message": str(e)
         }
 
+@frappe.whitelist()
+def create_payment_entry():
+    payment_data = frappe.local.form_dict
+    try:
+        pe_doc = frappe.get_doc({
+            "doctype": "Payment Entry",
+            "payment_type": payment_data.get("payment_type"),
+            "company": payment_data.get("company"),
+            "mode_of_payment": payment_data.get("mode_of_payment"),
+            "party_type": payment_data.get("party_type"),
+            "party": payment_data.get("party"),
+            "paid_to_account_currency": payment_data.get("paid_to_account_currency"),
+            "paid_to": payment_data.get("paid_to"),
+            "paid_amount": payment_data.get("paid_amount"),
+            "received_amount": payment_data.get("received_amount"),
+            "target_exchange_rate": payment_data.get("target_exchange_rate"),
+            "reference_date": payment_data.get("reference_date"),
+            "reference_no": payment_data.get("reference_no"),
+            "references": [
+                {
+                    "reference_doctype": payment_data.get("reference_doctype"),
+                    "reference_name": payment_data.get("reference_name"),
+                    "allocated_amount": payment_data.get("allocated_amount")
+                }
+            ]
+        })
+        
+        pe_doc.insert()
+        pe_doc.submit()
+        
+        return {
+            "status": "success",
+            "message": "Payment Entry created successfully",
+            "payment_entry_name": pe_doc.name,
+            "created_by": pe_doc.owner,
+            "created_on": pe_doc.creation
+        }
+    
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Payment Entry Creation Error")
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+        
 def submit_pos_opening_entry(doc,method):
     # Submit POS Opening Entry document
     doc.submit()
