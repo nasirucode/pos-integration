@@ -161,7 +161,7 @@ def get_products():
             filters={
                 'item_group': ["=", 'Products']
             },
-            fields=["name", "item_code", "item_group", "is_stock_item"]
+            fields=["name","item_name", "item_code", "item_group", "is_stock_item"]
         )
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
@@ -193,7 +193,7 @@ def get_products():
             item_code = detail["item_code"]
             final_product = {
                 "itemcode": item_code,
-                "itemname": detail["name"],
+                "itemname": detail["item_name"],
                 "groupname": detail["item_group"],
                 "maintainstock": detail["is_stock_item"],
                 "warehouses": products[item_code]["warehouses"],
