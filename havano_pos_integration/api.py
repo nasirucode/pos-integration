@@ -153,77 +153,6 @@ def get_pos_profile():
 
     return response
 
-# @frappe.whitelist()
-# def get_products():
-#     try:
-#         # Fetch all necessary data
-#         product_details = frappe.db.get_all("Item", 
-#             filters={
-#                 # 'item_group': 'Products'
-#             },
-#             fields=["name", "item_code", "item_group"]
-#         )
-#         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
-#         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
-#         # product_details = frappe.get_all("Item", fields=["name", "item_code", "item_group"])
-        
-#         # Initialize products dictionary with all items
-#         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
-
-#         # Add warehouse data
-#         for product in products_data:
-#             item_code = product["item_code"]
-#             products[item_code]["warehouses"].append({
-#                 "warehouse": product["warehouse"],
-#                 "qtyOnHand": product["actual_qty"]
-#             })
-        
-#         # Add price list data
-#         for price in price_lists:
-#             item_code = price["item_code"]
-#             products[item_code]["prices"].append({
-#                 "priceName": price["price_list"],
-#                 "price": price["price_list_rate"]
-#             })
-        
-#         # Compile final products list with defaults
-#         final_products = []
-#         for detail in product_details:
-#             defaults = frappe.get_all("Item Default", filters={"parent": detail.name}, fields=["default_warehouse", "default_price_list"])
-#             item_code = detail["item_code"]
-
-#             warehouses = products[item_code]["warehouses"]
-#             prices = products[item_code]["prices"]
-
-#             # Add default warehouse if no warehouse data
-#             if not warehouses and defaults:
-#                 warehouses.append({
-#                     "warehouse": defaults[0].get("default_warehouse"),
-#                     "qtyOnHand": 0
-#                 })
-            
-#             # Add default price list if no price data
-#             if not prices and defaults:
-#                 prices.append({
-#                     "priceName": defaults[0].get("default_price_list"),
-#                     "price": 0
-#                 })
-            
-#             final_product = {
-#                 "itemcode": item_code,
-#                 "itemname": detail["name"],
-#                 "groupname": detail["item_group"],
-#                 "warehouses": warehouses,
-#                 "prices": prices
-#             }
-#             final_products.append(final_product)
-#         create_response("200", {"products": final_products})
-#         return
-#     except Exception as e:
-#         create_response("417", {"error": str(e)})
-#         frappe.log_error(message=str(e), title="Error fetching products data")
-#         return
-
 @frappe.whitelist()
 def get_products():
     try:
@@ -475,7 +404,9 @@ def create_sales_invoice():
         return {
             "status": "success",
             "message": "Sales Invoice created successfully",
-            "invoice_name": si_doc.name
+            "invoice_name": si_doc.name,
+            "created_by": si_doc.owner,
+            "created_on": si_doc.creation
         }
     
     except Exception as e:

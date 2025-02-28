@@ -106,15 +106,62 @@ frappe.query_reports["Stock Ledger"] = {
 			default: 0,
 		},
 		{
-			fieldname: "group_by_date_and_customer",
-			label: __("Group by Date & Customer"),
+			fieldname: "group_by_date",
+			label: __("Group by Date"),
 			fieldtype: "Check",
 			default: 0,
 			on_change: function() {
-                const checked = frappe.query_report.get_filter_value("group_by_date_and_customer");
+                const checked = frappe.query_report.get_filter_value("group_by_date");
                 if (checked) {
-					console.log("Grouping by date and customer");
-                    groupByDateAndCustomerReport();
+                    let data = frappe.query_report.data;
+                    let grouped_data = {};
+
+                    
+                    // Group the data by posting date
+                    data.forEach(row => {
+                        let date = row.posting_date;
+                        if (!grouped_data[date]) {
+                            grouped_data[date] = {
+                                posting_date: date,
+                                item_code: "Date Total",
+                                voucher_type: "Group",
+                                voucher_no: "",
+                                in_qty: 0,
+                                out_qty: 0,
+                                qty_after_transaction: 0,
+                                stock_value: 0,
+                                valuation_rate: 0,
+                                is_group: true,
+                                indent: 0
+                            };
+                        }
+                        
+                        // Add child rows
+                        if (!grouped_data[date].children) {
+                            grouped_data[date].children = [];
+                        }
+                        row.indent = 1;
+                        grouped_data[date].children.push(row);
+                        
+                        // Sum up the values
+                        grouped_data[date].in_qty += row.in_qty || 0;
+                        grouped_data[date].out_qty += row.out_qty || 0;
+                        grouped_data[date].qty_after_transaction = row.qty_after_transaction || 0;
+                        grouped_data[date].stock_value += row.stock_value || 0;
+                    });
+
+					
+                    
+                    // Convert to array and sort by date
+                    let result = [];
+                    Object.keys(grouped_data).sort().forEach(date => {
+                        result.push(grouped_data[date]);
+                        result = result.concat(grouped_data[date].children);
+                    });
+					console.log(result);
+                    
+                    frappe.query_report.data = result;
+                    frappe.query_report.refresh();
                 } else {
                     frappe.query_report.refresh();
                 }
@@ -123,6 +170,9 @@ frappe.query_reports["Stock Ledger"] = {
 	],
 	formatter: function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
+		if (data.is_group) {
+            value = "<b>" + value + "</b>";
+        }
 		if (column.fieldname == "out_qty" && data && data.out_qty < 0) {
 			value = "<span style='color:red'>" + value + "</span>";
 		} else if (column.fieldname == "in_qty" && data && data.in_qty > 0) {
@@ -135,23 +185,3 @@ frappe.query_reports["Stock Ledger"] = {
 
 erpnext.utils.add_inventory_dimensions("Stock Ledger", 10);
 
-function groupByDateAndCustomerReport() {
-    frappe.query_report.data = frappe.query_report.data.reduce((acc, doc) => {
-        const key = `${doc.posting_date}-${doc.customer}`;
-        if (!acc[key]) {
-            acc[key] = {
-                ...doc,
-                invoices: [],
-                total_amount: 0,
-                base_grand_total: 0
-            };
-        }
-        acc[key].invoices.push(doc.name);
-        acc[key].total_amount += doc.grand_total || 0;
-        acc[key].base_grand_total += doc.base_grand_total || 0;
-        return acc;
-    }, {});
-
-    frappe.query_report.data = Object.values(frappe.query_report.data);
-    frappe.query_report.refresh();
-}

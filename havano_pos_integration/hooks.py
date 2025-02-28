@@ -131,18 +131,18 @@ doctype_list_js = {
 # Hook on document methods and events
 
 doc_events = {
-    "POS Opening Entry": {
-        "after_insert": "havano_pos_integration.api.submit_pos_opening_entry"
-    },
-    "POS Closing Entry": {
-        "after_insert": "havano_pos_integration.api.submit_pos_closing_entry"
-    },
-    "POS Invoice": {
-        "after_insert": "havano_pos_integration.api.submit_pos_invoice"
-    },
-    "Payment Entry": {
-        "after_insert": "havano_pos_integration.api.submit_payment_entry"
-    },
+    # "POS Opening Entry": {
+    #     "after_insert": "havano_pos_integration.api.submit_pos_opening_entry"
+    # },
+    # "POS Closing Entry": {
+    #     "after_insert": "havano_pos_integration.api.submit_pos_closing_entry"
+    # },
+    # "POS Invoice": {
+    #     "after_insert": "havano_pos_integration.api.submit_pos_invoice"
+    # },
+    # "Payment Entry": {
+    #     "after_insert": "havano_pos_integration.api.submit_payment_entry"
+    # },
     "Salary Slip": {
         "validate": "havano_pos_integration.custom_scripts.salary_slip.validate"
     },
