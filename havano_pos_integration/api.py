@@ -386,6 +386,8 @@ def create_sales_invoice():
             "set_warehouse": invoice_data.get("set_warehouse"),
             "cost_center": invoice_data.get("cost_center"),
             "update_stock": invoice_data.get("update_stock"),
+            "posting_date": invoice_data.get("posting_date"),  # Added posting_date
+            "posting_time": invoice_data.get("posting_time"),
             "items": [
                 {
                     "item_name": item.get("item_name"),
@@ -460,7 +462,7 @@ def create_payment_entry():
             "status": "error",
             "message": str(e)
         }
-        
+
 def submit_pos_opening_entry(doc,method):
     # Submit POS Opening Entry document
     doc.submit()
