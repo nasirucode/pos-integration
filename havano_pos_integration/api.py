@@ -422,7 +422,8 @@ def create_sales_invoice():
 def create_payment_entry():
     payment_data = frappe.local.form_dict
     try:
-        pe_doc = frappe.get_doc({
+        # Create Payment Entry document using frappe.client.insert
+        pe_doc = frappe.client.insert({
             "doctype": "Payment Entry",
             "payment_type": payment_data.get("payment_type"),
             "company": payment_data.get("company"),
@@ -445,15 +446,14 @@ def create_payment_entry():
             ]
         })
         
-        pe_doc.insert()
+        # Submit the Payment Entry document
         pe_doc.submit()
         
+        # Return the response
         return {
             "status": "success",
             "message": "Payment Entry created successfully",
-            "payment_entry_name": pe_doc.name,
-            "created_by": pe_doc.owner,
-            "created_on": pe_doc.creation
+            "payment_entry": pe_doc
         }
     
     except Exception as e:
