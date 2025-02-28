@@ -437,15 +437,15 @@ def create_payment_entry():
             "target_exchange_rate": payment_data.get("target_exchange_rate"),
             "reference_date": payment_data.get("reference_date"),
             "reference_no": payment_data.get("reference_no"),
-            # "references": [
-            #     {
-            #         "reference_doctype": payment_data.get("reference_doctype"),
-            #         "reference_name": payment_data.get("reference_name"),
-            #         "allocated_amount": payment_data.get("allocated_amount")
-            #     }
-            #     for ref in payment_data.get("references", [])
+            "references": [
+                {
+                    "reference_doctype": payment_data.get("reference_doctype"),
+                    "reference_name": payment_data.get("reference_name"),
+                    "allocated_amount": payment_data.get("allocated_amount")
+                }
+                for ref in payment_data.get("references", [])
 
-            # ]
+            ]
         }).insert()
         
         # Submit the Payment Entry document
