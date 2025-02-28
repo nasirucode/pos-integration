@@ -443,6 +443,8 @@ def create_payment_entry():
                     "reference_name": payment_data.get("reference_name"),
                     "allocated_amount": payment_data.get("allocated_amount")
                 }
+                for ref in payment_data.get("references", [])
+
             ]
         }).insert()
         
