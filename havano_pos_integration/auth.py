@@ -69,6 +69,16 @@ def login(usr,pwd):
             WHERE bin.warehouse = %s
         """, default_warehouse, as_dict=1)
 
+    # Get customers with the same cost center as the default cost center
+    customers = []
+    if default_cost_center:
+        customers = frappe.get_list("Customer",
+            filters={
+                "default_cost_center": default_cost_center
+            },
+            fields=["name", "customer_name", "customer_group", "territory", "default_cost_center"]
+        )
+
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 
@@ -84,7 +94,8 @@ def login(usr,pwd):
         "email":user.email or "",
         "warehouse": default_warehouse,
         "cost_center": default_cost_center,
-        "customer": default_customer,
+        "default_customer": default_customer,
+        "customers": customers,
         "warehouse_items": warehouse_items,
         "company" : {
             "name" : default_company_doc.name or "",
