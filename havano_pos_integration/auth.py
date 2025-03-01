@@ -74,9 +74,9 @@ def login(usr,pwd):
     if default_cost_center:
         customers = frappe.get_list("Customer",
             filters={
-                "default_cost_center": default_cost_center
+                "custom_cost_center": default_cost_center
             },
-            fields=["name", "customer_name", "customer_group", "territory", "default_cost_center"]
+            fields=["name", "customer_name", "customer_group", "territory", "custom_cost_center"]
         )
 
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
