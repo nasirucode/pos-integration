@@ -69,7 +69,7 @@ frappe.listview_settings["Payment Entry"] = {
                             frappe.show_alert({
                                 message: __(r.message),
                                 indicator: 'green'
-                            }, 5);
+                            }, 20);
                             listview.refresh();
                         },
                         error: function(r) {
