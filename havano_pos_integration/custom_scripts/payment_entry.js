@@ -17,6 +17,21 @@ frappe.listview_settings["Payment Entry"] = {
                         fieldtype: 'Date',
                         reqd: 1,
                         default: frappe.datetime.get_today()
+                    },
+                    {
+                        label: 'Account Paid To',
+                        fieldname: 'paid_to',
+                        fieldtype: 'Link',
+                        options: 'Account',
+                        reqd: 1,
+                        get_query: function() {
+                            return {
+                                filters: {
+                                    'is_group': 0,
+                                    'account_type': ['in', ['Bank', 'Cash']]
+                                }
+                            };
+                        }
                     }
                 ],
                 primary_action_label: 'Process',
@@ -45,7 +60,8 @@ frappe.listview_settings["Payment Entry"] = {
                         freeze: true,
                         args: {
                             start_date: values.start_date,
-                            end_date: values.end_date
+                            end_date: values.end_date,
+                            paid_to: values.paid_to
                         },
                         callback: function(r) {
                             // Close the loader dialog

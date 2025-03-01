@@ -2,11 +2,12 @@ import frappe
 from frappe.utils import getdate
 
 @frappe.whitelist()
-def reprocess_payment_entries(start_date, end_date):
+def reprocess_payment_entries(start_date, end_date, paid_to):
     # Get all payment entries for February
     payment_entries = frappe.get_all("Payment Entry",
         filters={
             "posting_date": ["between", [start_date, end_date]],
+            "paid_to": paid_to,
             "docstatus": 1
         },
         pluck="name"
