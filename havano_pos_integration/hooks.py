@@ -33,9 +33,11 @@ app_include_js = [
 doctype_js = {
     "Landed Cost Voucher" : "custom_scripts/landed_cost_voucher.js",
     "Salary Slip": "custom_scripts/salary_slip.js",
+    
 }
 doctype_list_js = {
    "Sales Invoice": "custom_scripts/sales_invoice_list.js",
+   "Payment Entry": "custom_scripts/payment_entry.js",
 }
 
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
