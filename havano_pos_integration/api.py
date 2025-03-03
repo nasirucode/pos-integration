@@ -298,10 +298,9 @@ def get_user():
         return
 
 @frappe.whitelist()
-def get_customer():s
+def get_customer():
     try:
-        default_cost_center = frappe.db.get_value("User Permission",
-            {"user": frappe.session.user, "allow": "Cost Center", "is_default": 1}, "for_value")        
+        default_cost_center = frappe.db.get_value("User Permission", {"user": frappe.session.user, "allow": "Cost Center", "is_default": 1}, "for_value")       
         # Fetch customer details with default price list
         customers = frappe.get_all("Customer", filters = {"custom_cost_center": default_cost_center, "default_price_list": ["!=", ""]} ,fields = ["customer_name","customer_type","custom_cost_center","custom_warehouse","gender","customer_pos_id","default_price_list"])
         for customer in customers:
