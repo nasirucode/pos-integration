@@ -102,9 +102,8 @@ def calculate_tax(doc):
 
 def component_exists_in_structure(salary_structure, component_name):
     return frappe.db.exists({
-        'doctype': 'Salary Structure',
-        'name': salary_structure,
-        'deductions': {
-            'salary_component': component_name
-        }
+        'doctype': 'Salary Detail',
+        'parent': salary_structure,
+        'salary_component': component_name,
+        'parenttype': 'Salary Structure'
     })
