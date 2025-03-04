@@ -14,7 +14,7 @@ def calculate_nssa(doc):
             row.amount = gross_pay * 0.045
             nssa_exists = True
 
-    if not nssa_exists:
+    if not nssa_exists and component_exists_in_structure(doc.salary_structure, 'NSSA'):
         gross_pay = doc.gross_pay or 0
         doc.append('deductions', {
             'salary_component': 'NSSA',
@@ -44,18 +44,9 @@ def calculate_allowable_deductions(doc):
     
    # Calculate taxable income by considering only tax applicable components
     taxable_earnings = 0
-    salary_details = frappe.get_all(
-        "Salary Detail",
-        filters={
-            "parent": doc.name,
-            "parentfield": "earnings",
-            "is_tax_applicable": 1
-        },
-        fields=["amount"]
-    )
-    
-    for earning in salary_details:
-        taxable_earnings += earning.amount or 0
+    for earning in doc.earnings:
+        if frappe.db.get_value('Salary Component', earning.salary_component, 'is_tax_applicable'):
+            taxable_earnings += earning.amount or 0
         
     doc.custom_total_taxable_income = taxable_earnings - total_allowable
 
@@ -96,15 +87,24 @@ def calculate_tax(doc):
             aids_levy_exists = True
 
     # Add PAYEE if it doesn't exist
-    if not payee_exists:
+    if not payee_exists and component_exists_in_structure(doc.salary_structure, 'Payee'):
         doc.append('deductions', {
             'salary_component': 'Payee',
             'amount': total_tax
         })
-    if not aids_levy_exists:
+    if not aids_levy_exists and component_exists_in_structure(doc.salary_structure, 'Aids Levy'):
         doc.append('deductions', {
             'salary_component': 'Aids Levy',
             'amount': total_tax * 0.03
         })
     
     update_total_deductions(doc)
+
+def component_exists_in_structure(salary_structure, component_name):
+    return frappe.db.exists({
+        'doctype': 'Salary Structure',
+        'name': salary_structure,
+        'deductions': {
+            'salary_component': component_name
+        }
+    })
