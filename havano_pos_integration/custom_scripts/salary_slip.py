@@ -42,8 +42,22 @@ def calculate_allowable_deductions(doc):
     total_allowable = (medical_amount * 0.5) + nssa_amount
     doc.custom_total_allowable_deductions = total_allowable
     
-    # Calculate taxable income
-    doc.custom_total_taxable_income = doc.gross_pay - total_allowable
+   # Calculate taxable income by considering only tax applicable components
+    taxable_earnings = 0
+    salary_details = frappe.get_all(
+        "Salary Detail",
+        filters={
+            "parent": doc.name,
+            "parentfield": "earnings",
+            "is_tax_applicable": 1
+        },
+        fields=["amount"]
+    )
+    
+    for earning in salary_details:
+        taxable_earnings += earning.amount or 0
+        
+    doc.custom_total_taxable_income = taxable_earnings - total_allowable
 
 def calculate_tax(doc):
     salary_structure_assignment = frappe.get_value(
