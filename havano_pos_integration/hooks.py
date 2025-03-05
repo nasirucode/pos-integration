@@ -34,6 +34,7 @@ doctype_js = {
     "Landed Cost Voucher" : "custom_scripts/landed_cost_voucher.js",
     "Salary Slip": "custom_scripts/salary_slip.js",
     "Income Tax Slab": "custom_scripts/income_tax_slab.js",
+    "Aditional Salary": "custom_scripts/additional_salary.js",
     
 }
 doctype_list_js = {
