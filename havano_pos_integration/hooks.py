@@ -149,6 +149,9 @@ doc_events = {
     "Salary Slip": {
         "validate": "havano_pos_integration.custom_scripts.salary_slip.validate"
     },
+    "Income Tax Slab": {
+        "validate": "havano_pos_integration.custom_scripts.income_tax_slab.validate"
+    },
     # "Sales Invoice": {
     #     "after_insert": "havano_pos_integration.api.submit_sales_invoice"
     # }
