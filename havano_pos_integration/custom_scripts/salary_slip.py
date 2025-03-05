@@ -30,6 +30,10 @@ def update_total_deductions(doc):
 def calculate_allowable_deductions(doc):
     medical_amount = 0
     nssa_amount = 0
+
+    # Calculate ZIMDEF (1% of total earnings)
+    total_earnings = sum(earning.amount or 0 for earning in doc.earnings)
+    zimdef_amount = total_earnings * 0.01
     
     # Get Medical and NSSA amounts
     for row in doc.deductions:
@@ -37,6 +41,19 @@ def calculate_allowable_deductions(doc):
             medical_amount = row.amount
         if row.salary_component == 'NSSA':
             nssa_amount = row.amount
+
+    # Add ZIMDEF to deductions if it doesn't exist
+    zimdef_exists = False
+    for row in doc.deductions:
+        if row.salary_component == 'ZIMDEF':
+            row.amount = zimdef_amount
+            zimdef_exists = True
+            
+    if not zimdef_exists and component_exists_in_structure(doc.salary_structure, 'ZIMDEF'):
+        doc.append('deductions', {
+            'salary_component': 'ZIMDEF',
+            'amount': zimdef_amount
+        })
     
     # Calculate allowable deductions
     total_allowable = (medical_amount * 0.5) + nssa_amount
