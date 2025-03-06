@@ -13,12 +13,12 @@ import pytz
 
 
 @frappe.whitelist(allow_guest=True)
-def login(usr,pwd):
+def login(usr,pwd, timezone):
 
     local_tz = str(get_localzone())
     erpnext_tz = frappe.utils.get_system_timezone()
 
-    if local_tz != erpnext_tz:
+    if timezone != erpnext_tz:
         frappe.local.response.http_status_code = 400
         frappe.local.response["message"] = f"Timezone mismatch. Your timezone is {local_tz}, but system requires {erpnext_tz}"
         return
