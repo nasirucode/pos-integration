@@ -9,7 +9,7 @@ import json
 import base64
 from havano_pos_integration.utils import create_response
 from tzlocal import get_localzone
-ssimport pytz
+import pytz
 
 
 @frappe.whitelist(allow_guest=True)
