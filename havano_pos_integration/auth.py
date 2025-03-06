@@ -108,6 +108,7 @@ def login(usr,pwd):
         "default_customer": default_customer,
         "customers": customers,
         "warehouse_items": warehouse_items,
+        "time_zone": f"{local_tz}{erpnext_tz}",
         "company" : {
             "name" : default_company_doc.name or "",
             "email" : default_company_doc.email or "",
