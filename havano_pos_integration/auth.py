@@ -8,10 +8,21 @@ import random
 import json
 import base64
 from havano_pos_integration.utils import create_response
+from tzlocal import get_localzone
+ssimport pytz
 
 
 @frappe.whitelist(allow_guest=True)
 def login(usr,pwd):
+
+    local_tz = str(get_localzone())
+    erpnext_tz = frappe.utils.get_system_timezone()
+
+    if local_tz != erpnext_tz:
+        frappe.local.response.http_status_code = 400s
+        frappe.local.response["message"] = f"Timezone mismatch. Your timezone is {local_tz}, but system requires {erpnext_tz}"
+        return
+
     try:
         login_manager = frappe.auth.LoginManager()
         login_manager.authenticate(user=usr,pwd=pwd)

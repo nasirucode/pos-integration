@@ -3,6 +3,7 @@
 
 frappe.ui.form.on("Income Tax Slab", {
 	refresh: function (frm) {
+		
         frm.doc.set_df_property("currency", "read_only", 0);
 		if (frm.doc.docstatus != 1) return;
 
