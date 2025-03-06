@@ -20,7 +20,7 @@ def login(usr,pwd, timezone):
 
     if timezone != erpnext_tz:
         frappe.local.response.http_status_code = 400
-        frappe.local.response["message"] = f"Timezone mismatch. Your timezone is {local_tz}, but system requires {erpnext_tz}"
+        frappe.local.response["message"] = f"Timezone mismatch. Your timezone is {timezone}, but system requires {erpnext_tz}"
         return
 
     try:
