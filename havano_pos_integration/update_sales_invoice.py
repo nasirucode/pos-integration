@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 
+@frappe.whitelist()
 def validate_warehouses():
     sales_invoice = frappe.get_all("Sales Invoice",
         filters={
