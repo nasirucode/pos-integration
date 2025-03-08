@@ -48,27 +48,18 @@ frappe.listview_settings["Sales Invoice"] = {
                 groupButton.text(__('Group by Date & Customer'));
             }
         });
+        const updateWarehouse = listview.page.add_inner_button(__('Update Warehouse'), function() {
+            frappe.call({
+                method: 'havano_pos_integration.update_sales_invoice.validate_warehouses',
+                freeze: true,
+                freeze_message: __('Syncing Warehouses...'),
+                callback: function(r) {
+                    listview.refresh();
+                    frappe.msgprint(__('Warehouse sync completed for sales invoices'));
+                }
+            });
+        });
 
-        // listview.page.add_field({
-        //     fieldtype: 'Check',
-        //     label: __('Group by Date and Customer'),
-        //     fieldname: 'group_by_date_and_customer',
-        //     change: function() {
-        //         const checked = listview.page.fields_dict.group_by_date_and_customer.get_value();
-        //         if (checked && !isGrouped) {
-        //             // Logic to group by date and customer
-        //             console.log('Grouping by date and customer');
-        //             groupByDateAndCustomer(listview);
-        //             // listview.refresh();
-        //             isGrouped = true;
-        //         } else if (!checked && isGrouped) {
-        //             // Logic to ungroup
-        //             console.log('Ungrouping');
-        //             listview.refresh();
-        //             isGrouped = false;
-        //         }
-        //     }
-        // });
 		listview.page.add_action_item(__("Delivery Note"), () => {
 			erpnext.bulk_transaction_processing.create(listview, "Sales Invoice", "Delivery Note");
 		});
