@@ -23,15 +23,16 @@ def validate_warehouses():
             if has_mismatch:
                 # Cancel the document
                 doc.cancel()
+                new_doc = frappe.copy_doc(doc)
+                new_doc.docstatus = 0
+                new_doc.amended_from = doc.name
                 
-                # Update item warehouses
-                for item in doc.items:
-                    item.warehouse = doc.set_warehouse
+                # Update warehouses in the new document
+                for item in new_doc.items:
+                    item.warehouse = new_doc.set_warehouse
                 
-                # Save and submit
-                doc.docstatus = 0  # Set as draft
-                doc.save()
-                doc.submit()
+                new_doc.save()
+                new_doc.submit()
                 processed += 1
                 
     return processed
