@@ -55,7 +55,7 @@ frappe.listview_settings["Sales Invoice"] = {
                 freeze_message: __('Syncing Warehouses...'),
                 callback: function(r) {
                     listview.refresh();
-                    frappe.msgprint(f`${r.message} Warehouse sync completed for sales invoices`);
+                    frappe.msgprint(`${r.message} Warehouse sync completed for sales invoices`);
                 }
             });
         });
