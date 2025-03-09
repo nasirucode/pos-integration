@@ -81,10 +81,10 @@ frappe.ui.form.on("Additional Salary", {
 			callback: function (r) {
 				if (r.message) {
 					console.log(r.message)
-					// frm.set_df_property("currency", "read_only", 0)
-					// frm.set_value("currency", r.message);
-                    // frm.set_dfield_property("currency", "read_only", 0);
-					// frm.refresh_fields();
+					frm.set_df_property("currency", "read_only", 0)
+					frm.set_value("currency", r.message);
+                    frm.set_dfield_property("currency", "read_only", 0);
+					frm.refresh_fields();
 				}
 			},
 		});
