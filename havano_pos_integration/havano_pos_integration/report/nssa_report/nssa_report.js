@@ -7,8 +7,7 @@ frappe.query_reports["NSSA Report"] = {
 			fieldname: "currency",
 			label: __("Currency"),
 			fieldtype: "Link",
-			options: "currency",
-			reqd: 1,
+			options: "Currency",
 		},
 		{
 			fieldname: "payroll_frequency",
