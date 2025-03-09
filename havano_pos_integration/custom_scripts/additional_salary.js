@@ -81,6 +81,7 @@ frappe.ui.form.on("Additional Salary", {
 			callback: function (r) {
 				if (r.message) {
 					frm.set_value("currency", r.message);
+					frm.set_df_property("currency", "read_only", 0)
                     frm.set_dfield_property("currency", "read_only", 0);
 					frm.refresh_fields();
 				}
