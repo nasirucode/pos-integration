@@ -11,7 +11,7 @@
  "json": "{}",
  "letter_head": "NEXAS GAS",
  "letterhead": null,
- "modified": "2025-03-09 15:16:32.652026",
+ "modified": "2025-03-09 16:15:06.941347",
  "modified_by": "Administrator",
  "module": "Havano Pos Integration",
  "name": "ZIMDEF Report",
@@ -19,7 +19,7 @@
  "prepared_report": 0,
  "ref_doctype": "Salary Slip",
  "report_name": "ZIMDEF Report",
- "report_type": "Report Builder",
+ "report_type": "Script Report",
  "roles": [
   {
    "role": "HR Manager"
