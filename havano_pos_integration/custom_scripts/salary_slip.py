@@ -1,6 +1,21 @@
 import frappe
 
 def validate(doc, method):
+    existing_salary_slip = frappe.db.exists(
+        "Salary Slip",
+        {
+            "employee": doc.employee,
+            "start_date": doc.start_date,
+            "end_date": doc.end_date,
+            "currency": doc.currency,
+            "docstatus": ["!=", 2],
+            "name": ["!=", doc.name]
+        },
+    )
+    
+    if existing_salary_slip:
+        frappe.throw(f"Salary Slip already exists for Employee {doc.employee} in Currency {doc.currency} for the given date range")
+
     calculate_nssa(doc)
     update_total_deductions(doc)
     calculate_allowable_deductions(doc)
