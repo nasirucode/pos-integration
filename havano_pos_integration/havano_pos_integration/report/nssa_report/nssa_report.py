@@ -39,13 +39,10 @@ def get_data(filters):
         SELECT
             emp.first_name, emp.last_name AS surname,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA' AND parentfield='deductions' AND ss.currency='ZWL') AS nssa_zig_employee,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA' AND parentfield='employer_contributions' AND ss.currency='ZWL') AS nssa_zig_employer,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA' AND parentfield='deductions' AND ss.currency='USD') AS nssa_usd_employee,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA' AND parentfield='employer_contributions' AND ss.currency='USD') AS nssa_usd_employer,
             CONCAT(ss.start_date, ' to ', ss.end_date) AS payroll_period
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` emp ON ss.employee = emp.name
-        WHERE ss.docstatus = 1 {conditions}
     """
     
     return frappe.db.sql(query, as_dict=True)
