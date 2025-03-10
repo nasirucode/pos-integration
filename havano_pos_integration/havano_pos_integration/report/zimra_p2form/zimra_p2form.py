@@ -12,7 +12,7 @@ def execute(filters=None):
 def get_columns():
     return [
         {"label": "Employer's Name", "fieldname": "employer_name", "fieldtype": "Data", "width": 200},
-        {"label": "Trade Name", "fieldname": "trade_name", "fieldtype": "Data", "width": 200},
+        {"label": "Trade Name", "fieldname": "name", "fieldtype": "Data", "width": 200},
         {"label": "TIN Number", "fieldname": "tin_number", "fieldtype": "Data", "width": 150},
         {"label": "Tax Period", "fieldname": "tax_period", "fieldtype": "Data", "width": 150},
         {"label": "Total Remuneration", "fieldname": "total_remuneration", "fieldtype": "Currency", "width": 200},
@@ -32,7 +32,7 @@ def get_data(filters):
     query = f"""
         SELECT
             comp.company_name AS employer_name,
-            comp.trade_name,
+            comp.name,
             comp.tax_id AS tin_number,
             CONCAT(ss.start_date, ' to ', ss.end_date) AS tax_period,
             SUM(ss.gross_pay) AS total_remuneration,
