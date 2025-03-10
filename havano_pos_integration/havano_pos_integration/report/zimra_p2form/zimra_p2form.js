@@ -10,9 +10,9 @@ frappe.query_reports["ZIMRA P2FORM"] = {
 			options: "Currency",
 		},
 		{
-			fieldname: "payroll_frequency",
+			fieldname: "payroll_period",
 			fieldtype: "Date",
-			label: __("Payroll Frequency"),
+			label: __("Payroll Period"),
 		}
 	]
 };
