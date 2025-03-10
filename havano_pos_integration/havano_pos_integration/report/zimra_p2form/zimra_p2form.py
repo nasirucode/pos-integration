@@ -43,7 +43,7 @@ def get_data(filters):
         FROM `tabSalary Slip` ss
         JOIN `tabSalary Detail` sd ON ss.name = sd.parent
         JOIN `tabCompany` comp ON ss.company = comp.name
-        WHERE ss.docstatus = 1 AND sd.salary_component = 'PAYE' {conditions}
+        WHERE ss.docstatus = 1 AND sd.salary_component = 'PAYEE' {conditions}
         GROUP BY ss.currency, ss.start_date, ss.end_date
     """
     
