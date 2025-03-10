@@ -3,6 +3,16 @@
 
 frappe.query_reports["NEC Report"] = {
 	"filters": [
-
+		{
+			fieldname: "currency",
+			label: __("Currency"),
+			fieldtype: "Link",
+			options: "Currency",
+		},
+		{
+			fieldname: "payroll_period",
+			fieldtype: "Date",
+			label: __("Payroll Period"),
+		}
 	]
 };
