@@ -23,7 +23,7 @@ def get_columns():
         {"label": "End Date", "fieldname": "end_date", "fieldtype": "Currency", "width": 150},
         {"label": "Gross ZWD", "fieldname": "gross_zwd", "fieldtype": "Currency", "width": 150},
         {"label": "Standard Levy ZWD", "fieldname": "standard_levy_zwd", "fieldtype": "Currency", "width": 150},
-        {"label": "Gross USD", "fieldname": "gross_usd", "fieldtype": "Data", "width": 180}
+        {"label": "Gross USD", "fieldname": "gross_usd", "fieldtype": "Data", "width": 180},
         {"label": "Standard Levy USD", "fieldname": "standard_levy_usd", "fieldtype": "Data", "width": 180}
     ]
 
