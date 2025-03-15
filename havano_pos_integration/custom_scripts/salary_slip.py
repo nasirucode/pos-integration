@@ -144,16 +144,7 @@ def update_total_deductions(doc):
     doc.total_deduction = sum(row.amount or 0 for row in doc.deductions)
 
     doc.net_pay = doc.gross_pay - doc.total_deduction
-    # total = 0
-    # for row in doc.deductions:
-    #     if row.salary_component == 'MEDICAL':
-    #         # Only count 50% of medical amount
-    #         total += (row.amount or 0) * 0.5
-    #     else:
-    #         # Count 100% of other deductions
-    #         total += (row.amount or 0)
-    
-    # doc.total_deduction = total
+    doc.base_net_pay = doc.net_pay * (doc.exchange_rate or 1)
 
 def component_exists_in_structure(salary_structure, component_name):
     return frappe.db.exists({
