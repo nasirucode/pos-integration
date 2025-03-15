@@ -1,6 +1,15 @@
 import frappe
 
 def validate(doc, method):
+    check_duplicate_salary_slip(doc)
+    
+    # Calculate all components at once
+    calculate_components(doc)
+    
+    # Update final values
+    update_total_deductions(doc)
+
+def check_duplicate_salary_slip(doc):
     existing_salary_slip = frappe.db.exists(
         "Salary Slip",
         {
@@ -10,84 +19,99 @@ def validate(doc, method):
             "currency": doc.currency,
             "docstatus": ["!=", 2],
             "name": ["!=", doc.name]
-        },
+        }
     )
     
     if existing_salary_slip:
         frappe.throw(f"Salary Slip already exists for Employee {doc.employee} in Currency {doc.currency} for the given date range")
 
-    calculate_nssa(doc)
-    update_total_deductions(doc)
-    calculate_allowable_deductions(doc)
-    calculate_tax(doc)
-
-def calculate_nssa(doc):
-    nssa_exists = False
-    for row in doc.deductions:
-        if row.salary_component == 'NSSA':
-            gross_pay = doc.gross_pay or 0
-            row.amount = gross_pay * 0.045
-            nssa_exists = True
-
-    if not nssa_exists and component_exists_in_structure(doc.salary_structure, 'NSSA'):
-        gross_pay = doc.gross_pay or 0
-        doc.append('deductions', {
-            'salary_component': 'NSSA',
-            'amount': gross_pay * 0.045
-        })
-
-def update_total_deductions(doc):
-    total = 0
-    for row in doc.deductions:
-        total += row.amount or 0
-    doc.total_deduction = total
-
-def calculate_allowable_deductions(doc):
-    medical_amount = 0
-    nssa_amount = 0
-
-    # Calculate ZIMDEF (1% of total earnings)
+def calculate_components(doc):
+    # Calculate base values first
     total_earnings = sum(earning.amount or 0 for earning in doc.earnings)
-    zimdef_amount = total_earnings * 0.01
     
-    # Get Medical and NSSA amounts
-    for row in doc.deductions:
-        if row.salary_component == 'Medical':
-            medical_amount = row.amount
-        if row.salary_component == 'NSSA':
-            nssa_amount = row.amount
-
-    # Add ZIMDEF to deductions if it doesn't exist
-    zimdef_exists = False
-    for row in doc.deductions:
-        if row.salary_component == 'ZIMDEF':
-            row.amount = zimdef_amount
-            zimdef_exists = True
-            
-    if not zimdef_exists and component_exists_in_structure(doc.salary_structure, 'ZIMDEF'):
-        doc.append('deductions', {
-            'salary_component': 'ZIMDEF',
-            'amount': zimdef_amount
-        })
-    
-    # Calculate allowable deductions
-    total_allowable = (medical_amount * 0.5) + nssa_amount
-    doc.custom_total_allowable_deductions = total_allowable
-    
-   # Calculate taxable income by considering only tax applicable components
+    # Calculate taxable earnings
     taxable_earnings = 0
     for earning in doc.earnings:
         if frappe.db.get_value('Salary Component', earning.salary_component, 'is_tax_applicable'):
             taxable_earnings += earning.amount or 0
-        
-    doc.custom_total_taxable_income = taxable_earnings - total_allowable
+    
+    # Get existing components and track them
+    component_amounts = {}
+    for row in doc.deductions:
+        component_amounts[row.salary_component] = row
+    
+    # Get all needed component rates from structures
+    structure = doc.salary_structure
+    
+    # Define components and their default rates
+    tax_components = {
+        'NSSA': 0.045,
+        'ZIMDEF': 0.01,
+        'Aids Levy': 0.03,
+        'NEC Commercial': 0.01,
+        'NEC Mining': 0.0045
+    }
+    
+    # Fetch all tax rates from Company Tax Calculations
+    for component_name in tax_components:
+        tax_percentage = frappe.db.get_value("Company Tax Calculations", component_name, "tax_percentage")
+        if tax_percentage is not None:
+            # Convert percentage to decimal
+            tax_components[component_name] = float(tax_percentage) / 100
+    
+    # Get Medical amount if it exists
+    medical_amount = component_amounts.get('MEDICAL', {}).get('amount', 0) or 0
 
-def calculate_tax(doc):
+    income_after_medical = taxable_earnings - (medical_amount * 0.5)
+    doc.custom_total_taxable_earnings = taxable_earnings
+    doc.custom_total_taxable_earnings_after_medical = income_after_medical
+
+    # Calculate NSSA based on gross pay
+    if component_exists_in_structure(structure, 'NSSA'):
+        add_or_update_component(doc, component_amounts, 'NSSA', income_after_medical * tax_components['NSSA'])
+    
+    # Calculate ZIMDEF based on total earnings
+    if component_exists_in_structure(structure, 'ZIMDEF'):
+        add_or_update_component(doc, component_amounts, 'ZIMDEF', income_after_medical * tax_components['ZIMDEF'])
+    
+    # Calculate NEC Commercial based on taxable income
+    if component_exists_in_structure(structure, 'NEC Commercial'):
+        add_or_update_component(doc, component_amounts, 'NEC Commercial', income_after_medical * tax_components['NEC Commercial'])
+    
+    # Calculate NEC Mining based on taxable income
+    if component_exists_in_structure(structure, 'NEC Mining'):
+        add_or_update_component(doc, component_amounts, 'NEC Mining', income_after_medical * tax_components['NEC Mining'])
+    
+    
+    nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0
+
+    # Calculate total allowable deductions
+    total_allowable = (medical_amount * 0.5) + nssa_amount
+    doc.custom_total_allowable_deductions = total_allowable
+    
+    # Calculate taxable income after allowable deductions
+    doc.custom_total_taxable_income = taxable_earnings - total_allowable
+    
+    # Calculate tax and AIDS Levy
+    calculate_tax(doc, component_amounts, tax_components)
+
+def add_or_update_component(doc, component_dict, component_name, amount):
+    if component_name in component_dict:
+        component_dict[component_name].amount = amount
+    else:
+        doc.append('deductions', {
+            'salary_component': component_name,
+            'amount': amount
+        })
+        component_dict[component_name] = doc.deductions[-1]
+
+def calculate_tax(doc, component_amounts, tax_components):
+    # Get tax slab
     salary_structure_assignment = frappe.get_value(
         "Salary Structure Assignment",
         {
             "employee": doc.employee,
-            # "salary_structure": doc.salary_structure,
+            "salary_structure": doc.salary_structure,
             "docstatus": 1
         },
         "income_tax_slab"
@@ -95,42 +119,41 @@ def calculate_tax(doc):
     
     if not salary_structure_assignment:
         return
-        
+    
     taxable_income = doc.custom_total_taxable_income
     tax_slab = frappe.get_doc("Income Tax Slab", salary_structure_assignment)
     total_tax = 0
     
+    # Find applicable tax slab
     for slab in tax_slab.slabs:
-        if (taxable_income >= slab.from_amount and (taxable_income <= slab.to_amount or not slab.to_amount)):
+        if (taxable_income >= slab.from_amount and 
+            (taxable_income <= slab.to_amount or not slab.to_amount)):
             tax = (taxable_income * (slab.percent_deduction / 100)) - slab.custom_amount_deduction
             total_tax = tax
             break
-
-    payee_exists = False
-    aids_levy_exists = False
-
-    # Update PAYEE component in deductions
-    for row in doc.deductions:
-        if row.salary_component == 'Payee':  # Adjust component name if different
-            row.amount = total_tax
-            payee_exists = True
-        if row.salary_component == 'Aids Levy':
-            row.amount = total_tax * 0.03
-            aids_levy_exists = True
-
-    # Add PAYEE if it doesn't exist
-    if not payee_exists and component_exists_in_structure(doc.salary_structure, 'Payee'):
-        doc.append('deductions', {
-            'salary_component': 'Payee',
-            'amount': total_tax
-        })
-    if not aids_levy_exists and component_exists_in_structure(doc.salary_structure, 'Aids Levy'):
-        doc.append('deductions', {
-            'salary_component': 'Aids Levy',
-            'amount': total_tax * 0.03
-        })
     
-    update_total_deductions(doc)
+    # Add or update PAYEE
+    if component_exists_in_structure(doc.salary_structure, 'Payee'):
+        add_or_update_component(doc, component_amounts, 'Payee', total_tax)
+    
+    # Add or update AIDS Levy
+    if component_exists_in_structure(doc.salary_structure, 'Aids Levy'):
+        add_or_update_component(doc, component_amounts, 'Aids Levy', total_tax * tax_components['Aids Levy'])
+
+def update_total_deductions(doc):
+    doc.total_deduction = sum(row.amount or 0 for row in doc.deductions)
+
+    doc.net_pay = doc.gross_pay - doc.total_deduction
+    # total = 0
+    # for row in doc.deductions:
+    #     if row.salary_component == 'MEDICAL':
+    #         # Only count 50% of medical amount
+    #         total += (row.amount or 0) * 0.5
+    #     else:
+    #         # Count 100% of other deductions
+    #         total += (row.amount or 0)
+    
+    # doc.total_deduction = total
 
 def component_exists_in_structure(salary_structure, component_name):
     return frappe.db.exists({
