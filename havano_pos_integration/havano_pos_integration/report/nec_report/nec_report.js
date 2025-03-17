@@ -8,6 +8,7 @@ frappe.query_reports["NEC Report"] = {
 			label: __("Currency"),
 			fieldtype: "Link",
 			options: "Currency",
+			default: "USD",
 		},
 		{
 			fieldname: "payroll_period",

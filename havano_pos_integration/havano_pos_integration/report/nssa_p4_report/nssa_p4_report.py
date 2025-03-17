@@ -39,7 +39,7 @@ def get_columns(filters):
         ])
     
     return columns
-
+    
 def get_data(filters):
     conditions = ""
     if filters.get("currency"):
@@ -58,17 +58,26 @@ def get_data(filters):
             CASE WHEN ss.currency = 'USD' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Arrears') END AS arrears_usd,
             CASE WHEN ss.currency = 'USD' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Prepayments') END AS prepayments_usd,
             CASE WHEN ss.currency = 'USD' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Surcharge') END AS surcharge_usd,
-            CASE WHEN ss.currency = 'USD' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Total Payment') END AS total_payment_usd,
+            CASE WHEN ss.currency = 'USD' THEN (
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Contribution'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Arrears'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Prepayments'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Surcharge'), 0)
+            ) END AS total_payment_usd,
             CASE WHEN ss.currency = 'ZWL' THEN ss.gross_pay END AS total_insurable_earnings_zwl,
             CASE WHEN ss.currency = 'ZWL' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Contribution') END AS current_contributions_zwl,
             CASE WHEN ss.currency = 'ZWL' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Arrears') END AS arrears_zwl,
             CASE WHEN ss.currency = 'ZWL' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Prepayments') END AS prepayments_zwl,
             CASE WHEN ss.currency = 'ZWL' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Surcharge') END AS surcharge_zwl,
-            CASE WHEN ss.currency = 'ZWL' THEN (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Total Payment') END AS total_payment_zwl
+            CASE WHEN ss.currency = 'ZWL' THEN (
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Contribution'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Arrears'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Prepayments'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NSSA Surcharge'), 0)
+            ) END AS total_payment_zwl
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` emp ON ss.employee = emp.name
         WHERE ss.docstatus = 1 {conditions}
     """
     
     return frappe.db.sql(query, as_dict=True)
-

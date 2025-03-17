@@ -38,15 +38,15 @@ def get_data(filters):
             ss.start_date AS commencement_date,
             emp.first_name AS first_names,
             emp.last_name AS surname,
-            emp.ssn,
-            emp.employee_id AS staff_no,
-            emp.national_id,
+            emp.name as ssn,
+            emp.employee_number AS staff_no,
+            emp.salutation as national_id,
             ss.end_date AS cessation_date,
-            ss.reason_for_cessation,
-            ss.nature_of_employment,
+            ss.salary_withholding as reason_for_cessation,
+            ss.salary_structure as nature_of_employment,
             ss.gross_pay AS nps_insurable_earnings_zig,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NPS Contribution') AS total_nps_contribution,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='WCIF Basic Salary') AS basic_salary_wcif,
+            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Basic Salary') AS basic_salary_wcif,
             ss.currency
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` emp ON ss.employee = emp.name

@@ -5,21 +5,22 @@ import frappe
 from frappe.utils import flt
 
 def execute(filters=None):
-    columns = get_columns()
+    columns = get_columns(filters)
     data = get_data(filters)
     return columns, data
 
-def get_columns():
+def get_columns(filters):
+    currency = filters.get('currency', 'USD')
     return [
         {"label": "Surname", "fieldname": "surname", "fieldtype": "Data", "width": 150},
         {"label": "First Names", "fieldname": "first_names", "fieldtype": "Data", "width": 200},
         {"label": "Start Date", "fieldname": "start_date", "fieldtype": "Date", "width": 150},
         {"label": "End Date", "fieldname": "end_date", "fieldtype": "Date", "width": 150},
         {"label": "Grade", "fieldname": "grade", "fieldtype": "Data", "width": 150},
-        {"label": "NEC Earnings ({filters.get('currency', 'Currency')})", "fieldname": "nec_earnings", "fieldtype": "Currency", "width": 150},
-        {"label": "Employee Contribution ({filters.get('currency', 'Currency')})", "fieldname": "employee_contribution", "fieldtype": "Currency", "width": 150},
-        {"label": "Employer Contribution ({filters.get('currency', 'Currency')})", "fieldname": "employer_contribution", "fieldtype": "Currency", "width": 150},
-        {"label": "Total NEC ({filters.get('currency', 'Currency')})", "fieldname": "total_nec", "fieldtype": "Currency", "width": 150}
+        {"label": f"NEC Earnings ({currency})", "fieldname": "nec_earnings", "fieldtype": "Currency", "width": 150},
+        {"label": f"Employee Contribution ({currency})", "fieldname": "employee_contribution", "fieldtype": "Currency", "width": 150},
+        {"label": f"Employer Contribution ({currency})", "fieldname": "employer_contribution", "fieldtype": "Currency", "width": 150},
+        {"label": f"Total NEC ({currency})", "fieldname": "total_nec", "fieldtype": "Currency", "width": 150}
     ]
 
 def get_data(filters):
@@ -36,10 +37,14 @@ def get_data(filters):
             ss.start_date,
             ss.end_date,
             emp.grade,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Earnings') AS nec_earnings,
+            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Commercial') AS nec_earnings,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Employee Contribution') AS employee_contribution,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Employer Contribution') AS employer_contribution,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Total') AS total_nec
+            (SELECT 
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Commercial'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Employee Contribution'), 0) +
+                COALESCE((SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NEC Employer Contribution'), 0)
+            ) AS total_nec        
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` emp ON ss.employee = emp.name
         WHERE ss.docstatus = 1 {conditions}
