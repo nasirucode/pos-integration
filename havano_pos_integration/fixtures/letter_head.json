@@ -1,0 +1,25 @@
+[
+ {
+  "align": "Left",
+  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: center;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: center;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <img src=\"/files/zimdef.png\" alt=\"Company Logo\" class=\"logo\">\n        <div class=\"company-info\">\n            <p>PERIOD STANDARDS DEV. LEV RETURN DUAL</p>\n            <p>Appoint</p>\n        </div>\n    </div>",
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Letter Head",
+  "footer": null,
+  "footer_align": "Left",
+  "footer_image": null,
+  "footer_image_height": 0.0,
+  "footer_image_width": 0.0,
+  "footer_script": null,
+  "footer_source": "HTML",
+  "header_script": null,
+  "image": null,
+  "image_height": 0.0,
+  "image_width": 0.0,
+  "is_default": 1,
+  "letter_head_name": "ZIMDEF",
+  "modified": "2025-03-17 19:50:45.023483",
+  "name": "ZIMDEF",
+  "source": "HTML"
+ }
+]

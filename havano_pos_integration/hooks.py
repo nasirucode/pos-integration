@@ -172,7 +172,11 @@ doc_events = {
 #     }
 # ]
 
-fixtures = ["Custom Field"]
+fixtures = [
+    "Custom Field",
+    "Letter Head",
+    "Print Format",
+]
 
 #doc_events = {
 # 	"*": {
