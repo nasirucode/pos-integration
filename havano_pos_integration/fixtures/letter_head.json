@@ -20,11 +20,11 @@
   "letter_head_name": "ZIMDEF",
   "modified": "2025-03-17 21:11:27.303293",
   "name": "ZIMDEF",
-  "source": "HTML"
+  "source": "Image"
  },
  {
   "align": "Left",
-  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: center;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: center;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <div class=\"company-info\">\n            <p>Appoint</p>\n            <p>NEC SUMMARY BY GRADE - CURRENCY COMPONENT</p>\n        </div>\n        <img src=\"/files/logo.png\" alt=\"Company Logo\" class=\"logo\">\n        \n    </div>",
+  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: center;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: left;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <div class=\"company-info\">\n            <p>Appoint</p>\n            <p>NEC SUMMARY BY GRADE - CURRENCY COMPONENT</p>\n        </div>\n        <img src=\"/files/logo.png\" alt=\"Company Logo\" class=\"logo\">\n        \n    </div>",
   "disabled": 0,
   "docstatus": 0,
   "doctype": "Letter Head",
@@ -41,13 +41,13 @@
   "image_width": 0.0,
   "is_default": 0,
   "letter_head_name": "NEC",
-  "modified": "2025-03-17 21:13:01.073858",
+  "modified": "2025-03-17 23:00:34.871945",
   "name": "NEC",
   "source": "HTML"
  },
  {
   "align": "Left",
-  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: center;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: center;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <div class=\"company-info\">\n            <p style=\"color:red;\">FORM P4</p>\n            <p>Monthly Payment Schedule of Employees</p><br><br>\n            <p>\n                Employer SSR No:<br>\n                Employer EC:<br>\n                Employer's Name: APOINT <br>\n                Employer's Physical Address: ZIMBABWE<br>\n                Reason for Cessation: - Insert C for Casual Employee, R for Retirement, D for Death, O for any other reason for cessation <br>\n                Nature of Employment - Insert A if Arduous employment, and N for Normal Employment <br>\n            </p>\n        </div>\n        <img src=\"/files/logo.png\" alt=\"Company Logo\" class=\"logo\">\n        <div class=\"company-address\">\n            <p>National Social Security Authority<br>\n                Selous Avenue/Sam Nujoma<br>\n                P.O. Box CY1387<br>\n                Causeway, Harare<br>\n                Telephone (04) 706523-5<br>\n                Fax (04) 796320<br>\n                Payment Month and Year: <br>\n                Sector: <br>\n                Email Address: payviewpayroll@gmail.com <br>\n                Contact Telephone Number: 0773 100 715\n            </p>\n        </div>\n        \n    </div>",
+  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: left;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: left;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <div class=\"company-info\">\n            <p style=\"color:red;\">FORM P4</p>\n            <p>Monthly Payment Schedule of Employees</p><br><br>\n            <p>\n                Employer SSR No:<br>\n                Employer EC:<br>\n                Employer's Name: APOINT <br>\n                Employer's Physical Address: ZIMBABWE<br>\n                Reason for Cessation: - Insert C for Casual Employee, R for Retirement, D for Death, O for any other reason for cessation <br>\n                Nature of Employment - Insert A if Arduous employment, and N for Normal Employment <br>\n            </p>\n        </div>\n        <img src=\"/files/logo.png\" alt=\"Company Logo\" class=\"logo\">\n        <div class=\"company-address\">\n            <p>National Social Security Authority<br>\n                Selous Avenue/Sam Nujoma<br>\n                P.O. Box CY1387<br>\n                Causeway, Harare<br>\n                Telephone (04) 706523-5<br>\n                Fax (04) 796320<br>\n                Payment Month and Year: <br>\n                Sector: <br>\n                Email Address: payviewpayroll@gmail.com <br>\n                Contact Telephone Number: 0773 100 715\n            </p>\n        </div>\n        \n    </div>",
   "disabled": 0,
   "docstatus": 0,
   "doctype": "Letter Head",
@@ -62,10 +62,33 @@
   "image": null,
   "image_height": 0.0,
   "image_width": 0.0,
-  "is_default": 1,
+  "is_default": 0,
   "letter_head_name": "NSSA FORM P4",
-  "modified": "2025-03-17 21:25:31.995047",
+  "modified": "2025-03-17 22:39:46.680948",
   "name": "NSSA FORM P4",
+  "source": "HTML"
+ },
+ {
+  "align": "Left",
+  "content": "<style>\n        .letterhead {\n            width: 100%;\n            border-bottom: 3px solid #000;\n            padding-bottom: 10px;\n            margin-bottom: 20px;\n            text-align: left;\n            display: flex;\n            justify-content:space-between ;\n        }\n        .logo {\n            float: left;\n            width: 150px;\n            height: auto;\n        }\n        .company-info {\n            text-align: left;\n            font-size: 14px;\n            font-weight: bold;\n\n        }\n        .footer {\n            width: 100%;\n            border-top: 3px solid #000;\n            padding-top: 10px;\n            text-align: center;\n            margin-top: 20px;\n            font-size: 12px;\n        }\n    </style>\n    \n    <div class=\"letterhead\">\n        <div class=\"company-info\">\n            <img src=\"/files/nssa.png\" alt=\"Company Logo\" class=\"logo\"><br>\n            <p>SSR No:</p>\n            <p>Contribution Month: </p>\n            <p>\n                Employer's Name: APOINT <br>\n                Address: ZIMBABWE<br>\n                Tel: 0773 100 715\n            </p>\n        </div>\n        \n        <div class=\"company-address\">\n            <img src=\"/files/logo.png\" alt=\"Company Logo\" class=\"logo\"><br>\n            <p>REMITTANCE ADVICE : FORM P4 A</p>\n            <h5>NATIONAL SOCIAL SECURITY AUTHORITY</h5>\n                \n            <p>Industry Code (IC): &nbsp; WCIF Rate: 1.25 %</p>\n        </div>\n        \n    </div>",
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Letter Head",
+  "footer": null,
+  "footer_align": "Left",
+  "footer_image": null,
+  "footer_image_height": 0.0,
+  "footer_image_width": 0.0,
+  "footer_script": null,
+  "footer_source": "HTML",
+  "header_script": null,
+  "image": null,
+  "image_height": 0.0,
+  "image_width": 0.0,
+  "is_default": 1,
+  "letter_head_name": "NSSA P4",
+  "modified": "2025-03-17 23:08:57.004377",
+  "name": "NSSA P4",
   "source": "HTML"
  }
 ]

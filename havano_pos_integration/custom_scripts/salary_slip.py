@@ -68,19 +68,21 @@ def calculate_components(doc):
 
     # Calculate NSSA based on gross pay
     if component_exists_in_structure(structure, 'NSSA'):
-        add_or_update_component(doc, component_amounts, 'NSSA', income_after_medical * tax_components['NSSA'])
+        add_or_update_component(doc, component_amounts, 'NSSA', taxable_earnings * tax_components['NSSA'])
     
+    nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0 + medical_amount
+    income_after_nssa = taxable_earnings - nssa_amount
     # Calculate ZIMDEF based on total earnings
     if component_exists_in_structure(structure, 'ZIMDEF'):
-        add_or_update_component(doc, component_amounts, 'ZIMDEF', income_after_medical * tax_components['ZIMDEF'])
+        add_or_update_component(doc, component_amounts, 'ZIMDEF', income_after_nssa * tax_components['ZIMDEF'])
     
     # Calculate NEC Commercial based on taxable income
     if component_exists_in_structure(structure, 'NEC Commercial'):
-        add_or_update_component(doc, component_amounts, 'NEC Commercial', income_after_medical * tax_components['NEC Commercial'])
+        add_or_update_component(doc, component_amounts, 'NEC Commercial', income_after_nssa * tax_components['NEC Commercial'])
     
     # Calculate NEC Mining based on taxable income
     if component_exists_in_structure(structure, 'NEC Mining'):
-        add_or_update_component(doc, component_amounts, 'NEC Mining', income_after_medical * tax_components['NEC Mining'])
+        add_or_update_component(doc, component_amounts, 'NEC Mining', income_after_nssa * tax_components['NEC Mining'])
     
     
     nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0

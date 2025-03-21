@@ -2,14 +2,22 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils import flt
+from frappe.utils import flt, formatdate, format_date
+from frappe import _
 
 def execute(filters=None):
     columns = get_columns(filters)
     data = get_data(filters)
+    message = f"Testing"
+    data_to_be_printed = {
+        'title': 'My Report Title',
+        'subtitle': 'My report subtitle'
+    }
+    
     return columns, data
 
 def get_columns(filters):
+    # Your existing get_columns code remains the same
     currency_label = filters.get("currency", "Currency")
     
     columns = [
@@ -41,6 +49,7 @@ def get_columns(filters):
     return columns
     
 def get_data(filters):
+    # Your existing get_data code remains the same
     conditions = ""
     if filters.get("currency"):
         conditions += f" AND ss.currency = '{filters.get('currency')}'"

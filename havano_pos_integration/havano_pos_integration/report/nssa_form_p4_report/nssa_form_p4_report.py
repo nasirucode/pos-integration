@@ -44,8 +44,8 @@ def get_data(filters):
             ss.end_date AS cessation_date,
             ss.salary_withholding as reason_for_cessation,
             ss.salary_structure as nature_of_employment,
-            ss.gross_pay AS nps_insurable_earnings_zig,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='NPS Contribution') AS total_nps_contribution,
+            ss.custom_total_taxable_earnings_after_medical AS nps_insurable_earnings_zig,
+            (ss.custom_total_taxable_earnings_after_medical * 0.09) AS total_nps_contribution,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Basic Salary') AS basic_salary_wcif,
             ss.currency
         FROM `tabSalary Slip` ss

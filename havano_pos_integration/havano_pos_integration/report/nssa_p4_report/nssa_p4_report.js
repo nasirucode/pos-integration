@@ -14,5 +14,6 @@ frappe.query_reports["NSSA P4 Report"] = {
 			fieldtype: "Date",
 			label: __("Payroll Period"),
 		}
-	]
+	],
+	
 };
