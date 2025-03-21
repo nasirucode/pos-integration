@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NSSA P4 A Remittance Advice</title>
     <style>
-        /* General Styles */
+        /* Keep your existing styles */
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 10px;
@@ -14,160 +13,21 @@
             padding: 0;
             width: 21cm;
             min-height: 29.7cm;
-            background-color: #000;
+            background-color: #fff;
         }
+        /* Include all your other styles here */
         .print-format-gutter{
             padding: 0px !important;
         }
-
         .page {
             width: 100%;
-            /* A4 width */
             min-height: 29.7cm;
-            /* A4 height */
             padding:0.3cm 1cm;
             position: relative;
             font-weight: bold;
             margin: 0px auto;
         }
-
-        /* NSSA Branding */
-        .nssa-branding {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        .ssr-no {
-            text-align: left;
-            font-size: 10px;
-        }
-
-        /* Document Information */
-        .doc-info {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            /* Creates three columns */
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .doc-info-left {
-            text-align: left;
-        }
-
-        .doc-info-center {
-            text-align: center;
-        }
-
-        .doc-info-right {
-            text-align: right;
-        }
-        .doc-header{
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Employer Details Table */
-        .employer-details table {
-            width: 70%;
-            /* border-collapse: collapse; */
-        }
-
-        .employer-details td {
-            padding: 5px;
-            /* border-radius: 5px; */
-        }
-
-        .employer-details td:first-child {
-            font-weight: bold;
-            width: 30%;
-        }
-
-        /* Contribution Payable Table */
-        .contribution-table table {
-            width: 100%;
-            /* border-collapse: collapse; */
-        }
-
-        .contribution-table th,
-        .contribution-table td {
-            /* border: 1px solid black; */
-            padding: 5px;
-            text-align: center;
-            /* border-radius: 5px; */
-        }
-
-        .contribution-table th {
-            font-weight: bold;
-        }
-
-        .contribution-table th:nth-child(1),
-        .contribution-table td:nth-child(1) {
-            text-align: left;
-        }
-        
-        .cell-content {
-            border-radius: 7px;
-            padding: 10px;
-            border: 1px solid;
-            margin: -5px;
-        }
-        
-
-        /* Important Notes */
-        .notes {
-            margin-top: 10px;
-            font-size: 12px;
-        }
-
-        /* Declaration Section */
-        .declaration {
-            margin-top: 20px;
-        }
-
-        .declaration p {
-            margin-bottom: 5px;
-        }
-
-        .signature-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            /* Creates three columns */
-            align-items: start;
-            /* Align items to the start */
-            gap: 10px;
-            /* Add some gap between columns */
-        }
-
-        .signature-section>div {
-            /* Target direct children of signature-section */
-            display: flex;
-            flex-direction: column;
-        }
-
-        .page-number {
-            position: absolute;
-            bottom: 2cm;
-            left: 1cm;
-            font-size: 10px;
-        }
-        .logo img {
-            height: 150px;
-            width: auto;
-            max-width: 200px;
-            /* margin-top: -50px; */
-            /* display: inline-block;  */
-        }
-        .logo2 img {
-            height: auto;
-            width: auto;
-            max-width: 200px;
-            margin-top: -40px;
-            margin-bottom: 30px;
-            margin-right: -40px;
-            /* display: inline-block;  */
-        }
+        /* Include all your other styles here */
         .text-primary{
             color: blue !important;
             border-color: #000;
@@ -177,17 +37,8 @@
             border-color: #000;
         }
     </style>
-
-    </script>
 </head>
-
 <body>
-
-   {{data|length}}
-    {% for item in data %}
-        <li>{{ item.first_names}}</li>
-    {% endfor %}
-
     <div class="page">
         <div class="doc-header">
             <div class="nssa-branding doc-info-left">
@@ -205,7 +56,6 @@
             </div>
         </div>
         
-
         <div class="doc-info">
             <div class="doc-info-left">
                 <p>SSR No:</p>
@@ -214,7 +64,6 @@
                 <p>Industry Code (IC):</p>
             </div>
             <div class="doc-info-right">
-                
                 <p>WCIF Rate: 1.25%</p>
             </div>
         </div>
@@ -223,11 +72,11 @@
             <table>
                 <tr>
                     <td>Contribution Month:</td>
-                    <td>28-Feb-25</td>
+                    <td>{{ data[0].start_date if data and data|length > 0 else 'N/A' }} to {{ data[0].end_date if data and data|length > 0 else 'N/A' }}</td>
                 </tr>
                 <tr>
                     <td>Employer's Name:</td>
-                    <td>APOINT</td>
+                    <td>{{ data_to_be_printed.company }}</td>
                 </tr>
                 <tr>
                     <td>Address:</td>
@@ -235,7 +84,7 @@
                 </tr>
                 <tr>
                     <td>Tel:</td>
-                    <td>0773 100 715</td>
+                    <td>N/A</td>
                 </tr>
                 <tr>
                     <td colspan="2">Cash/RTGS/Cheque Number:</td>
@@ -248,49 +97,49 @@
                 <thead>
                     <tr>
                         <th><div class="cell-content">CONTRIBUTION PAYABLE FOR:</div></th>
-                        <th><div class="cell-content">NPS ( {{ filters }} COMPONENT)</div></th>
-                        <th><div class="cell-content">WCIF (USD COMPONENT)</div></th>
+                        <th><div class="cell-content">NPS ({{ filters.currency }} COMPONENT)</div></th>
+                        <th><div class="cell-content">WCIF ({{ filters.currency }} COMPONENT)</div></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th><div class="cell-content">Number of employees</div></td>
-                        <th><div class="cell-content text-primary">1</div></td>
-                        <th><div class="cell-content text-primary">1</div></td>
+                        <th><div class="cell-content">Number of employees</div></th>
+                        <th><div class="cell-content text-primary">{{ data_to_be_printed.employee_count }}</div></th>
+                        <th><div class="cell-content text-primary">{{ data_to_be_printed.employee_count }}</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content" style="margin-bottom: 15px">Total Insurable Earnings</div></td>
-                        <th><div class="cell-content text-danger">200.00</div></td>
-                        <th><div class="cell-content text-danger">200.00</div></td>
+                        <th><div class="cell-content" style="margin-bottom: 15px">Total Insurable Earnings</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_earnings) }}</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_earnings) }}</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content">Current contributions:</div></td>
-                        <th><div class="cell-content text-danger">18.00</div></td>
-                        <th><div class="cell-content text-danger">2.50</div></td>
+                        <th><div class="cell-content">Current contributions:</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_contributions) }}</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.wcif_contribution) }}</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content">Arrears:</div></td>
-                        <th><div class="cell-content text-danger">0.00</div></td>
-                        <th><div class="cell-content text-danger"></div></td>
+                        <th><div class="cell-content">Arrears:</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_arrears) }}</div></th>
+                        <th><div class="cell-content text-danger">0.00</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content">Prepayments:</div></td>
-                        <th><div class="cell-content text-danger"></div></td>
-                        <th><div class="cell-content text-danger"></div></td>
+                        <th><div class="cell-content">Prepayments:</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_prepayments) }}</div></th>
+                        <th><div class="cell-content text-danger">0.00</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content">Surcharge:</div></td>
-                        <th><div class="cell-content text-danger"></div></td>
-                        <th><div class="cell-content text-danger"></div></td>
+                        <th><div class="cell-content">Surcharge:</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_surcharge) }}</div></th>
+                        <th><div class="cell-content text-danger">0.00</div></th>
                     </tr>
                     <tr>
-                        <th><div class="cell-content">Total Payment:</div></td>
-                        <th><div class="cell-content text-danger"></div></td>
-                        <th><div class="cell-content text-danger"></div></td>
+                        <th><div class="cell-content">Total Payment:</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.total_payment) }}</div></th>
+                        <th><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.wcif_contribution) }}</div></th>
                     </tr>
                     <tr>
-                        <td>GRAND TOTALS (USD COMPONENT)</td>
-                        <th colspan="2"><div class="cell-content text-danger">20.50</div></td>
+                        <td>GRAND TOTALS ({{ filters.currency }} COMPONENT)</td>
+                        <th colspan="2"><div class="cell-content text-danger">{{ "%.2f"|format(data_to_be_printed.grand_total) }}</div></th>
                     </tr>
                 </tbody>
             </table>
@@ -308,11 +157,10 @@
             <div class="signature-section">
                 <div>
                     <p>Signed: _______________________________</p>
-                    <p>Name: ADMIN</p>
+                    <p>Name: {{ data_to_be_printed.user }}</p>
                 </div>
                 <div>
-                    
-                    <p>Date: 28-Feb-25</p>
+                    <p>Date: {{ data_to_be_printed.today }}</p>
                     <p>Position Held: ADMINISTRATOR</p>
                 </div>
                 <div style="border: 1px solid; padding: 0.9cm; border-radius: 5px; text-align: center;">
@@ -325,7 +173,5 @@
             <p>Page: 1 of 1</p>
         </div>
     </div>
-
 </body>
-
-</html>
+</html>                        
