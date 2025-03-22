@@ -83,7 +83,7 @@ function renderZimraForm(report) {
                 totals.aids_levy += flt(emp.aids_levy);
                 
                 // Format dates
-                const dob = emp.date_of_birth ? frappe.datetime.str_to_user(emp.date_of_birth) : '';
+                const dob = emp.dob ? frappe.datetime.str_to_user(emp.dob) : '';
                 const startDate = emp.start_date ? frappe.datetime.str_to_user(emp.start_date) : '';
                 const endDate = emp.end_date ? frappe.datetime.str_to_user(emp.end_date) : '';
                 
@@ -177,6 +177,9 @@ function renderZimraForm(report) {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            position: absolute;
+            right: 35px;
+            top: 90px;
         }
         
         .itf16-title {
@@ -205,7 +208,7 @@ function renderZimraForm(report) {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
-            width: 100%;
+            width: 80%;
         }
         
         .company-info-table {
@@ -233,14 +236,14 @@ function renderZimraForm(report) {
         }
         
         .form-details-table table {
-            width: 100%;
+            width: 70%;
             border-collapse: collapse;
             background-color: #f9f9f9;
         }
         
         .form-details-table th {
-            padding: 6px 8px;
-            text-align: center;
+            padding: 6px 0px;
+            text-align: left;
             font-weight: 600;
             font-size: 11px;
         }
@@ -349,7 +352,7 @@ function renderZimraForm(report) {
             <div class="itf16-badge">
                 <div class="itf16-title">ITF16 FORM</div>
                 <div class="itf16-logo-container">
-                    <img src="/files/payview.png" alt="ITF16" class="itf16-logo">
+                    <img src="/files/zimra.png" alt="ITF16" class="itf16-logo">
                 </div>
             </div>
         </div>
