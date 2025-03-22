@@ -125,7 +125,7 @@ function renderZimraForm(report) {
             // Currency
             const currency = reportData[0].currency || 'USD';
             
-            // Create the HTML content
+            // Create the HTML content with modern CSS
             let html = `<!DOCTYPE html>
 <html lang="en">
 
@@ -134,179 +134,264 @@ function renderZimraForm(report) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITF16 Form - ZIMRA</title>
     <style>
+        /* Modern CSS Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
         /* General Styles */
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
             margin: 0;
             padding: 0;
+            color: #333;
+            background-color: #fff;
         }
 
         .page {
             width: 95%;
-            /* A4 width */
             min-height: 29.7cm;
-            /* A4 height */
-            margin: 0px auto;
-            padding:0.3cm 1cm;
+            margin: 0 auto;
+            padding: 0.5cm 1cm;
             position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
         }
 
-        /* ZIMRA Branding */
-        .zimra-branding {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .zimra-logo {
-            /* Adjust logo size as needed */
-            width: auto;
-            height: auto;
-            /* margin: 0 auto; Center the logo */
-            display: block;
-        }
-
-        .payview-text {
-            text-align: left;
-            margin-bottom: 10px;
-        }
-
-        /* Company Information Tables */
-        .company-info-table {
+        /* Header Section */
+        .header-section {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .zimra-logo {
+            max-height: 60px;
+            width: auto;
+        }
+        
+        .itf16-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .itf16-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .itf16-logo-container {
+            border: 1px solid #333;
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 120px;
+            height: 60px;
+        }
+        
+        .itf16-logo {
+            max-width: 100%;
+            max-height: 100%;
         }
 
-        .company-info-table table {
+        /* Company Info Section */
+        .company-info-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .company-info-table {
             width: 48%;
-            /* Adjust table width */
+        }
+        
+        .company-info-table table {
+            width: 100%;
             border-collapse: collapse;
         }
-
+        
         .company-info-table td {
-            padding: 2px 5px;
+            padding: 4px 8px;
         }
-
+        
         .company-info-table td:first-child {
             font-weight: bold;
             width: 40%;
         }
 
-        /* Form Title */
-        .form-title {
-            text-align: center;
-            margin-bottom: 10px;
+        /* Form Details */
+        .form-details-table {
+            margin-bottom: 15px;
+            width: 100%;
         }
-
-        /* Form Details Table */
+        
         .form-details-table table {
             width: 100%;
             border-collapse: collapse;
+            background-color: #f9f9f9;
         }
-
-        .form-details-table td {
-            padding: 2px 5px;
-        }
-
-        .form-details-table td:nth-child(even) {
+        
+        .form-details-table th {
+            padding: 6px 8px;
             text-align: center;
+            font-weight: 600;
+            font-size: 11px;
         }
 
-        /* Employee Information Table */
+        /* Employee Table */
+        .employee-table {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
         .employee-table table {
             width: 100%;
             border-collapse: collapse;
-        }
-
-        .employee-table td {
-            /* border: 1px solid black; */
-            padding: 2px 5px;
-            text-align: right;
-        }
-
-        .employee-table th {
-            font-weight: bold;
-            border-bottom: 1px solid;
-            border-top: 1px solid;
-            padding: 2px 5px;
-            text-align: left;
-        }
-        th{
-            font-weight: bold;
-        }
-        td{
             font-size: 10px;
         }
-
+        
+        .employee-table th {
+            background-color: #f2f2f2;
+            padding: 8px 5px;
+            text-align: left;
+            font-weight: 600;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+        }
+        
+        .employee-table td {
+            padding: 6px 5px;
+            text-align: right;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
         .employee-table th:nth-child(1),
-        .employee-table td:nth-child(1) {
+        .employee-table th:nth-child(2),
+        .employee-table th:nth-child(3),
+        .employee-table th:nth-child(4),
+        .employee-table th:nth-child(5),
+        .employee-table th:nth-child(6),
+        .employee-table th:nth-child(7),
+        .employee-table td:nth-child(1),
+        .employee-table td:nth-child(2),
+        .employee-table td:nth-child(3),
+        .employee-table td:nth-child(4),
+        .employee-table td:nth-child(5),
+        .employee-table td:nth-child(6),
+        .employee-table td:nth-child(7) {
             text-align: left;
         }
-
-        .employee-table .totals-row td {
+        
+        .totals-row {
             font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        
+        .totals-row td {
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 5px;
         }
 
         /* Page Number */
         .page-number {
             position: absolute;
-            bottom: 2cm;
-            right: 2cm;
+            bottom: 1cm;
+            right: 1cm;
             font-size: 10px;
+            color: #666;
+        }
+        
+        /* Responsive adjustments */
+        @media print {
+            body {
+                background: none;
+            }
+            
+            .page {
+                width: 100%;
+                box-shadow: none;
+                margin: 0;
+                padding: 0.5cm;
+            }
+            
+            .employee-table th {
+                background-color: #f2f2f2 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .totals-row {
+                background-color: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
 
 <body>
-
     <div class="page">
-        <div class="zimra-branding">
+        <!-- Header with logo and ITF16 badge -->
+        <div class="header-section">
             <img src="/files/payview.png" alt="ZIMRA Logo" class="zimra-logo">
+            
+            <div class="itf16-badge">
+                <div class="itf16-title">ITF16 FORM</div>
+                <div class="itf16-logo-container">
+                    <img src="/files/payview.png" alt="ITF16" class="itf16-logo">
+                </div>
+            </div>
         </div>
 
-        <div class="company-info-table">
-            <table>
-                <tr>
-                    <td>COMPANY NAME:</td>
-                    <td>${company.company_name || 'APOINT'}</td>
-                </tr>
-                <tr>
-                    <td>ITF16 YEAR:</td>
-                    <td>${itf16Year}</td>
-                </tr>
-                <tr>
-                    <td>CONTACT ADDRESS:</td>
-                    <td>${'ZIMBABWE'}</td>
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    <td>BP NUMBER:</td>
-                    <td>${'1234000'}</td>
-                </tr>
-                <tr>
-                    <td>FDS METHOD:</td>
-                    <td>None</td>
-                </tr>
-                <tr>
-                    <td>CONTACT PHONE:</td>
-                    <td>${'0773 100 715'}</td>
-                </tr>
-            </table>
-            <div style="float: right;">
-                <p>ITF16 FORM</p>
-                <table style="text-align: right; border: 1px solid;">
+        <!-- Company Information -->
+        <div class="company-info-container">
+            <div class="company-info-table">
+                <table>
                     <tr>
-                        <td><img src="/files/payview.png" alt=""></td>
+                        <td>COMPANY NAME:</td>
+                        <td>${company.company_name || 'APOINT'}</td>
+                    </tr>
+                    <tr>
+                        <td>ITF16 YEAR:</td>
+                        <td>${itf16Year}</td>
+                    </tr>
+                    <tr>
+                        <td>CONTACT ADDRESS:</td>
+                        <td>${'ZIMBABWE'}</td>
                     </tr>
                 </table>
             </div>
-           
+            <div class="company-info-table">
+                <table>
+                    <tr>
+                        <td>BP NUMBER:</td>
+                        <td>${'1234000'}</td>
+                    </tr>
+                    <tr>
+                        <td>FDS METHOD:</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td>CONTACT PHONE:</td>
+                        <td>${'0773 100 715'}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
-
-        <div class="form-details-table" style="clear: both;">
+        <!-- Form Details -->
+        <div class="form-details-table">
             <table>
                 <tr>
                     <th></th>
@@ -320,6 +405,7 @@ function renderZimraForm(report) {
             </table>
         </div>
 
+        <!-- Employee Table -->
         <div class="employee-table">
             <table>
                 <thead>
@@ -346,7 +432,7 @@ function renderZimraForm(report) {
                 </thead>
                 <tbody>
                     ${employeeRows}
-                    <tr class="totals-row" style="border-top: 1px solid; border-bottom: 1px solid;">
+                                        <tr class="totals-row">
                         <td colspan="6" style="text-align: right;">PERIOD TOTALS ARE IN ${currency}</td>
                         <td></td>
                         <td>${format_currency(totals.gross_pay, currency)}</td>
@@ -369,9 +455,7 @@ function renderZimraForm(report) {
             <p>Page: 1 of 1</p>
         </div>
     </div>
-
 </body>
-
 </html>`;
             
             // Open the HTML in a new window for printing
@@ -402,4 +486,3 @@ function format_currency(value, currency) {
     // Add currency symbol
     return currency + " " + formattedValue;
 }
-
