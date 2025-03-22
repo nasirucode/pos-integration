@@ -34,7 +34,9 @@ def get_data(filters):
     if filters.get("currency"):
         conditions += f" AND ss.currency = '{filters.get('currency')}'"
     if filters.get("payroll_frequency"):
-        conditions += f" AND ss.payroll_frequency = '{filters.get('payroll_frequency')}'"
+        from_date = filters.get("payroll_frequency")[0]
+        to_date = filters.get("payroll_frequency")[1]
+        conditions += f" AND ss.start_date >= '{from_date}' AND ss.end_date <= '{to_date}'"   
     
     query = f"""
         SELECT

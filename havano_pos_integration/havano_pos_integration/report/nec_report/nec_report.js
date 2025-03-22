@@ -78,9 +78,9 @@ function renderNecForm(report) {
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 11px;
                 line-height: 1.2;
-                width: 100%;
-                margin: 0;
-                padding: 20px 30px;
+                width: 95%;
+                margin: 0px auto;
+                padding: 20px 0px;
             }
 
             /* Header Section */
