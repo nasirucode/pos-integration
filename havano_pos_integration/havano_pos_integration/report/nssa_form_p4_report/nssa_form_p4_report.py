@@ -7,6 +7,7 @@ from frappe.utils import flt
 def execute(filters=None):
     columns = get_columns()
     data = get_data(filters)
+     
     return columns, data
 
 def get_columns():
@@ -21,10 +22,11 @@ def get_columns():
         {"label": "Date of Cessation", "fieldname": "cessation_date", "fieldtype": "Date", "width": 150},
         {"label": "Reason for Cessation", "fieldname": "reason_for_cessation", "fieldtype": "Data", "width": 150},
         {"label": "Nature of Employment", "fieldname": "nature_of_employment", "fieldtype": "Data", "width": 150},
-        {"label": "NPS Insurable Earnings (ZIG)", "fieldname": "nps_insurable_earnings_zig", "fieldtype": "Currency", "width": 180},
+        {"label": "NPS Insurable Earnings (ZIG)", "fieldname": "nps_insurable_earnings_zig", "fieldtype": "Currency", "width": 180,"options": "ZWL"},
         {"label": "Total NPS (9%) Contribution", "fieldname": "total_nps_contribution", "fieldtype": "Currency", "width": 180},
         {"label": "Basic Salary (WCIF)", "fieldname": "basic_salary_wcif", "fieldtype": "Currency", "width": 180},
-        {"label": "Currency", "fieldname": "currency", "fieldtype": "Data", "width": 100}
+        {"label": "Currency", "fieldname": "currency", "fieldtype": "Data", "width": 100},
+        {"label": "Actual Insurable Earnings", "fieldname": "actual_insurable_earnings", "fieldtype": "currency", "width": 100}
     ]
 
 def get_data(filters):
@@ -48,8 +50,9 @@ def get_data(filters):
             emp.relieving_date AS cessation_date,
             emp.reason_for_leaving as reason_for_cessation,
             emp.employment_type as nature_of_employment,
-            ss.custom_total_taxable_earnings_after_medical AS nps_insurable_earnings_zig,
+            CASE WHEN ss.currency = 'ZWL' THEN ss.custom_total_taxable_earnings_after_medical ELSE 0 END AS nps_insurable_earnings_zig,
             (ss.custom_total_taxable_earnings_after_medical * 0.09) AS total_nps_contribution,
+            ss.custom_total_taxable_earnings_after_medical AS actual_insurable_earnings,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Basic Salary') AS basic_salary_wcif,
             ss.currency
         FROM `tabSalary Slip` ss

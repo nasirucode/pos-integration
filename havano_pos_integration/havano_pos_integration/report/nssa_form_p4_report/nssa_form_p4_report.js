@@ -89,7 +89,7 @@ function renderNSSAP4Form(report) {
                 totalNpsEarnings += flt(row.nps_insurable_earnings_zig);
                 totalNpsContribution += flt(row.total_nps_contribution);
                 totalBasicSalary += flt(row.basic_salary_wcif);
-                totalInsurableEarnings += flt(row.nps_insurable_earnings_zig); // Same as NPS earnings
+                totalInsurableEarnings += flt(row.actual_insurable_earnings); // Same as NPS earnings
                 
                 // Format dates
                 const commencementDate = row.commencement_date ? 
@@ -114,10 +114,10 @@ function renderNSSAP4Form(report) {
                     <td>${cessationDate}</td>
                     <td>${row.reason_for_cessation || ""}</td>
                     <td>${row.nature_of_employment || ""}</td>
-                    <td class="text-danger">${format_currency(row.nps_insurable_earnings_zig, row.currency)}</td>
+                    <td class="text-danger">${format_currency(row.nps_insurable_earnings_zig, "ZWL")}</td>
                     <td class="text-danger">${format_currency(row.total_nps_contribution, row.currency)}</td>
                     <td class="text-danger">${format_currency(row.basic_salary_wcif, row.currency)}</td>
-                    <td class="text-danger">${format_currency(row.nps_insurable_earnings_zig, row.currency)}</td>
+                    <td class="text-danger">${format_currency(row.actual_insurable_earnings, row.currency)}</td>
                 </tr>
                 `;
             }).join("");
@@ -370,10 +370,10 @@ function renderNSSAP4Form(report) {
                                             PERIOD TOTALS (${filters.currency || "USD"} COMPONENT)
                                         </td>
                                         <td colspan="7"></td>
-                                        <td class="text-danger">${format_currency(totalNpsEarnings, filters.currency)}</td>
-                                        <td class="text-danger">${format_currency(totalNpsContribution, filters.currency)}</td>
-                                        <td class="text-danger">${format_currency(totalBasicSalary, filters.currency)}</td>
-                                        <td class="text-danger">${format_currency(totalInsurableEarnings, filters.currency)}</td>
+                                        <td class="text-danger">${format_currency(totalNpsEarnings, "ZWL")}</td>
+                                        <td class="text-danger">${format_currency(totalNpsContribution, filters.currency || "USD")}</td>
+                                        <td class="text-danger">${format_currency(totalBasicSalary, filters.currency || "USD")}</td>
+                                        <td class="text-danger">${format_currency(totalInsurableEarnings, filters.currency || "USD")}</td>
                                     </tr>
                                     <tr style="font-size: 13px; margin-bottom: 20px;">
                                         <td></td>
