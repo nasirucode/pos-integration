@@ -30,7 +30,9 @@ def get_data(filters):
     if filters.get("employee"):
         conditions += f" AND ss.employee = '{filters.get('employee')}'"
     if filters.get("payroll_period"):
-        conditions += f" AND CONCAT(ss.start_date, ' to ', ss.end_date) = '{filters.get('payroll_period')}'"
+        from_date = filters.get("payroll_period")[0]
+        to_date = filters.get("payroll_period")[1]
+        conditions += f" AND ss.start_date >= '{from_date}' AND ss.end_date <= '{to_date}'"
     
     query = f"""
         SELECT
@@ -41,8 +43,8 @@ def get_data(filters):
             ss.end_date,
             ss.gross_pay,
             (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Pension' AND parentfield='deductions') AS basic_pension,
-            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='PAYE' AND parentfield='deductions') AS paye,
-            (SELECT amount * 0.03 FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='PAYE' AND parentfield='deductions') AS aids_levy,
+            (SELECT amount FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Payee' AND parentfield='deductions') AS paye,
+            (SELECT amount * 0.03 FROM `tabSalary Detail` WHERE parent=ss.name AND salary_component='Payee' AND parentfield='deductions') AS aids_levy,
             ss.currency
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` emp ON ss.employee = emp.name
