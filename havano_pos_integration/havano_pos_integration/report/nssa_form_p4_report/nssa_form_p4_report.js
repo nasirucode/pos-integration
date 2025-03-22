@@ -35,14 +35,14 @@ frappe.query_reports["NSSA Form P4 Report"] = {
 
 function renderNSSAP4Form(report) {
     // Get the report data
-    const reportData = report.data || [];
+    const data = report.data || [];
     const filters = report.get_values();
 
 	// Helper function to parse float values safely
     function flt(value) {
         return parseFloat(value) || 0;
     }
-    
+    const reportData = data.length > 1 ? data.slice(0, -1) : data;
     // Simple currency formatter to avoid recursion
     function format_currency(value, currency) {
         // Convert to number and ensure it's a valid number
@@ -106,7 +106,7 @@ function renderNSSAP4Form(report) {
                     <td class="text-primary">${row.ssn || "N/A"}</td>
                     <td>${row.staff_no || ""}</td>
                     <td class="text-danger">${row.national_id || ""}</td>
-                    <td class="text-primary">${period || ""}</td>
+                    <td class="text-primary" colspan="2">${period || ""}</td>
                     <td class="text-primary">${dob || ""}</td>
                     <td class="text-primary">${row.surname || ""}</td>
                     <td class="text-primary">${row.first_names || ""}</td>
@@ -147,9 +147,9 @@ function renderNSSAP4Form(report) {
                                 font-family: Arial, Helvetica, sans-serif;
                                 font-size: 11px;
                                 line-height: 1.2;
-                                width: 100%;
-                                margin: 0;
-                                padding: 20px 30px;
+                                width: 95%;
+                                margin: 0px auto;
+                                padding: 20px 0px;
                             }
 
                             /* Header Section */
@@ -340,7 +340,7 @@ function renderNSSAP4Form(report) {
                                         <th>
                                             National ID No
                                         </th>
-                                        <th>
+                                        <th colspan="2">
                                             Period
                                         </th>
                                         <th>Date of</th>
@@ -366,7 +366,7 @@ function renderNSSAP4Form(report) {
                                 <tbody>
                                     ${employeeRows}
                                     <tr style="border-top: 1px double; border-bottom: 1px double black; margin-bottom: 40px;">
-                                        <td colspan="5" style="text-align: right; font-weight: bold;">
+                                        <td colspan="6" style="text-align: right; font-weight: bold;">
                                             PERIOD TOTALS (${filters.currency || "USD"} COMPONENT)
                                         </td>
                                         <td colspan="7"></td>
@@ -392,7 +392,7 @@ function renderNSSAP4Form(report) {
                                         <td colspan="10">Use the National I.D. to identify employees pending the issue of
                                             Social Security Numbers.<br> The information given in this form may be used for the purposes of other
                                             Schemes administered by NSSA.</td>
-                                        <td colspan="4" rowspan="2" style="border: 1px dotted; text-align: center; padding-top: 200px; padding-bottom: 200px;"> Official Stamp</td>
+                                        <td colspan="4" rowspan="2" style="border: 1px dotted; text-align: center; padding-top: 50px; padding-bottom: 50px;"> Official Stamp</td>
                                     </tr>
                                     
                                 </tbody>

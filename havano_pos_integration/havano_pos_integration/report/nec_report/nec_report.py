@@ -28,8 +28,10 @@ def get_data(filters):
     if filters.get("currency"):
         conditions += f" AND ss.currency = '{filters.get('currency')}'"
     if filters.get("payroll_period"):
-        conditions += f" AND CONCAT(ss.start_date, ' to ', ss.end_date) = '{filters.get('payroll_period')}'"
-    
+        from_date = filters.get("payroll_period")[0]
+        to_date = filters.get("payroll_period")[1]
+        conditions += f" AND ss.start_date >= '{from_date}' AND ss.end_date <= '{to_date}'"
+        
     query = f"""
         SELECT
             emp.last_name AS surname,
