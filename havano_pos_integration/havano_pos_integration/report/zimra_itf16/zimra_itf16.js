@@ -55,10 +55,7 @@ function renderZimraForm(report) {
             doctype: "Company",
             filters: { is_group: 0, name: frappe.defaults.get_user_default("Company") },
             fieldname: [
-                "company_name", 
-                "address", 
-                "phone_no", 
-                "tax_id"
+                "company_name",
             ]
         },
         callback: function(company_data) {
@@ -146,10 +143,11 @@ function renderZimraForm(report) {
         }
 
         .page {
-            width: 21cm;
+            width: 95%;
             /* A4 width */
             min-height: 29.7cm;
             /* A4 height */
+            margin: 0px auto;
             padding:0.3cm 1cm;
             position: relative;
         }
@@ -279,13 +277,13 @@ function renderZimraForm(report) {
                 </tr>
                 <tr>
                     <td>CONTACT ADDRESS:</td>
-                    <td>${company.address || 'ZIMBABWE'}</td>
+                    <td>${'ZIMBABWE'}</td>
                 </tr>
             </table>
             <table>
                 <tr>
                     <td>BP NUMBER:</td>
-                    <td>${company.tax_id || '1234000'}</td>
+                    <td>${'1234000'}</td>
                 </tr>
                 <tr>
                     <td>FDS METHOD:</td>
@@ -293,7 +291,7 @@ function renderZimraForm(report) {
                 </tr>
                 <tr>
                     <td>CONTACT PHONE:</td>
-                    <td>${company.phone_no || '0773 100 715'}</td>
+                    <td>${'0773 100 715'}</td>
                 </tr>
             </table>
             <div style="float: right;">
