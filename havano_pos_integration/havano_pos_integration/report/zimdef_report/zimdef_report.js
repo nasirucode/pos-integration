@@ -90,9 +90,9 @@ function renderZimdefForm(report) {
     });
     
     // Get company information
-    frappe.db.get_value("Company", frappe.defaults.get_default("company"), ["company_name", "address"], (r) => {
+    frappe.db.get_value("Company", frappe.defaults.get_default("company"), ["company_name"], (r) => {
         const companyName = r.company_name || "";
-        const companyAddress = r.address || "";
+        // const companyAddress = r.address || "";
         
         // Create the HTML content
         const htmlContent = `
@@ -108,8 +108,8 @@ function renderZimdefForm(report) {
                     font-family: Arial, Helvetica, sans-serif;
                     font-size: 11px;
                     line-height: 1.2;
-                    width: 100%;
-                    margin: 0;
+                    width: 95%;
+                    margin: 0px auto;
                     padding: 20px 30px;
                 }
 
