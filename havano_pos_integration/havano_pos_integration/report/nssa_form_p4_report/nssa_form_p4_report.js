@@ -37,6 +37,26 @@ function renderNSSAP4Form(report) {
     // Get the report data
     const reportData = report.data || [];
     const filters = report.get_values();
+
+	// Helper function to parse float values safely
+    function flt(value) {
+        return parseFloat(value) || 0;
+    }
+    
+    // Simple currency formatter to avoid recursion
+    function format_currency(value, currency) {
+        // Convert to number and ensure it's a valid number
+        const numValue = parseFloat(value) || 0;
+        
+        // Format to 2 decimal places with thousand separators
+        const formattedValue = numValue.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        
+        // Add currency symbol
+        return currency + " " + formattedValue;
+    }
     
     // Get company information
     frappe.call({
@@ -405,17 +425,17 @@ function renderNSSAP4Form(report) {
     });
 }
 
-// Helper function to format currency values
-function format_currency(value, currency) {
-    if (!value) return "0.00";
-    return frappe.format(value, {
-        fieldtype: 'Currency',
-        currency: currency || frappe.defaults.get_default("currency")
-    });
-}
+// // Helper function to format currency values
+// function format_currency(value, currency) {
+//     if (!value) return "0.00";
+//     return frappe.format(value, {
+//         fieldtype: 'Currency',
+//         currency: currency || frappe.defaults.get_default("currency")
+//     });
+// }
 
-// Helper function for float operations
-function flt(value) {
-    if (!value) return 0;
-    return parseFloat(value);
-}
+// // Helper function for float operations
+// function flt(value) {
+//     if (!value) return 0;
+//     return parseFloat(value);
+// }
