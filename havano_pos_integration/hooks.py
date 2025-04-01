@@ -176,7 +176,8 @@ fixtures = [
     "Custom Field",
     "Letter Head",
     "Print Format",
-   "Income Tax Slab"
+    "Income Tax Slab",
+   "Salary Component"
 ]
 
 #doc_events = {

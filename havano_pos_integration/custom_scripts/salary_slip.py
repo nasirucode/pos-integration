@@ -60,7 +60,10 @@ def calculate_components(doc):
             tax_components[component_name] = float(tax_percentage) / 100
     
     # Get Medical amount if it exists
-    medical_amount = component_amounts.get('MEDICAL', {}).get('amount', 0) or 0
+    medical_amount = 0
+    for component_name, component in component_amounts.items():
+        if "MEDICAL" in component_name.upper():
+            medical_amount += component.amount or 0
 
     income_after_medical = taxable_earnings - (medical_amount * 0.5)
     doc.custom_total_taxable_earnings = taxable_earnings
@@ -68,34 +71,33 @@ def calculate_components(doc):
 
     # Calculate NSSA based on gross pay
     if component_exists_in_structure(structure, 'NSSA'):
-        add_or_update_component(doc, component_amounts, 'NSSA', taxable_earnings * tax_components['NSSA'])
+        add_or_update_component(doc, component_amounts, 'NSSA', total_earnings * tax_components['NSSA'])
     
-    nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0 + medical_amount
-    income_after_nssa = taxable_earnings - nssa_amount
     # Calculate ZIMDEF based on total earnings
     if component_exists_in_structure(structure, 'ZIMDEF'):
-        add_or_update_component(doc, component_amounts, 'ZIMDEF', income_after_nssa * tax_components['ZIMDEF'])
+        add_or_update_component(doc, component_amounts, 'ZIMDEF', total_earnings * tax_components['ZIMDEF'])
     
     # Calculate NEC Commercial based on taxable income
     if component_exists_in_structure(structure, 'NEC Commercial'):
-        add_or_update_component(doc, component_amounts, 'NEC Commercial', income_after_nssa * tax_components['NEC Commercial'])
+        add_or_update_component(doc, component_amounts, 'NEC Commercial', total_earnings * tax_components['NEC Commercial'])
     
     # Calculate NEC Mining based on taxable income
     if component_exists_in_structure(structure, 'NEC Mining'):
-        add_or_update_component(doc, component_amounts, 'NEC Mining', income_after_nssa * tax_components['NEC Mining'])
+        add_or_update_component(doc, component_amounts, 'NEC Mining', total_earnings * tax_components['NEC Mining'])
     
     
     nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0
+    nec_amount = component_amounts.get('NEC Commercial', {}).get('amount', 0) or 0
 
     # Calculate total allowable deductions
-    total_allowable = (medical_amount * 0.5) + nssa_amount
+    total_allowable = nssa_amount + nec_amount
     doc.custom_total_allowable_deductions = total_allowable
     
     # Calculate taxable income after allowable deductions
     doc.custom_total_taxable_income = taxable_earnings - total_allowable
     
     # Calculate tax and AIDS Levy
-    calculate_tax(doc, component_amounts, tax_components)
+    calculate_tax(doc, component_amounts, tax_components, medical_amount)
 
 def add_or_update_component(doc, component_dict, component_name, amount):
     if component_name in component_dict:
@@ -107,7 +109,7 @@ def add_or_update_component(doc, component_dict, component_name, amount):
         })
         component_dict[component_name] = doc.deductions[-1]
 
-def calculate_tax(doc, component_amounts, tax_components):
+def calculate_tax(doc, component_amounts, tax_components, medical_amount):
     # Get tax slab
     salary_structure_assignment = frappe.get_value(
         "Salary Structure Assignment",
@@ -130,7 +132,7 @@ def calculate_tax(doc, component_amounts, tax_components):
     for slab in tax_slab.slabs:
         if (taxable_income >= slab.from_amount and 
             (taxable_income <= slab.to_amount or not slab.to_amount)):
-            tax = (taxable_income * (slab.percent_deduction / 100)) - slab.custom_amount_deduction
+            tax = (taxable_income * (slab.percent_deduction / 100)) - slab.custom_amount_deduction - (medical_amount * 0.5)
             total_tax = tax
             break
     

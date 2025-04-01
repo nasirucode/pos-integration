@@ -43,7 +43,7 @@
   "letter_head_name": "NEC",
   "modified": "2025-03-17 23:00:34.871945",
   "name": "NEC",
-  "source": "HTML"
+  "source": "Image"
  },
  {
   "align": "Left",
@@ -66,7 +66,7 @@
   "letter_head_name": "NSSA FORM P4",
   "modified": "2025-03-17 22:39:46.680948",
   "name": "NSSA FORM P4",
-  "source": "HTML"
+  "source": "Image"
  },
  {
   "align": "Left",
@@ -89,6 +89,6 @@
   "letter_head_name": "NSSA P4",
   "modified": "2025-03-17 23:08:57.004377",
   "name": "NSSA P4",
-  "source": "HTML"
+  "source": "Image"
  }
 ]
