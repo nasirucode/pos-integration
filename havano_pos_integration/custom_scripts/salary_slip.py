@@ -70,9 +70,21 @@ def calculate_components(doc):
     doc.custom_total_taxable_earnings_after_medical = income_after_medical
 
     # Calculate NSSA based on gross pay
+    # if component_exists_in_structure(structure, 'NSSA'):
+    #     add_or_update_component(doc, component_amounts, 'NSSA', total_earnings * tax_components['NSSA'])
+    # Update NSSA calculation based on nssa_ceiling
     if component_exists_in_structure(structure, 'NSSA'):
-        add_or_update_component(doc, component_amounts, 'NSSA', total_earnings * tax_components['NSSA'])
-    
+        # Fetch nssa_ceiling from Payroll Settings
+        nssa_ceiling = frappe.db.get_single_value("Payroll Settings", "nssa_ceiling") or 0
+
+        # Calculate NSSA based on the ceiling
+        if total_earnings <= nssa_ceiling:
+            nssa_amount = total_earnings * tax_components['NSSA']
+        else:
+            nssa_amount = nssa_ceiling * tax_components['NSSA']
+        # Add or update NSSA component
+        add_or_update_component(doc, component_amounts, 'NSSA', nssa_amount)
+
     # Calculate ZIMDEF based on total earnings
     if component_exists_in_structure(structure, 'ZIMDEF'):
         add_or_update_component(doc, component_amounts, 'ZIMDEF', total_earnings * tax_components['ZIMDEF'])

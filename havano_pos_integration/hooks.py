@@ -35,12 +35,15 @@ doctype_js = {
     "Salary Slip": "custom_scripts/salary_slip.js",
     "Income Tax Slab": "custom_scripts/income_tax_slab.js",
     "Additional Salary": "custom_scripts/additional_salary.js",
+    "Employee": "custom_scripts/employee.js",
     
 }
 doctype_list_js = {
    "Sales Invoice": "custom_scripts/sales_invoice_list.js",
    "Payment Entry": "custom_scripts/payment_entry.js",
 }
+
+
 
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -156,6 +159,15 @@ doc_events = {
     },
     # "Sales Invoice": {
     #     "after_insert": "havano_pos_integration.api.submit_sales_invoice"
+    # }
+    "Employee": {
+        "before_save": "havano_pos_integration.custom_scripts.employee_api.employee_before_save"
+    },
+    "Salary Structure": {
+        "on_cancel": "havano_pos_integration.custom_scripts.employee.salary_structure_on_cancel"
+    }
+    # "Additional Salary": {
+    #     "validate": "havano_pos_integration.custom_scripts.additional_salary.additional_salary_validate"
     # }
 }
 
