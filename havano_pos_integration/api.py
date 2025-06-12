@@ -169,6 +169,11 @@ def get_products():
         # Initialize products dictionary with all items
         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
 
+        # Fetch taxes data from Item Tax child table
+        taxes_data = frappe.get_all("Item Tax", 
+            fields=["parent", "item_tax_template", "tax_category", "valid_from", "minimum_net_rate", "maximum_net_rate"],
+            filters={"parenttype": "Item"}
+        )
         # Add warehouse data
         for product in products_data:
             item_code = product["item_code"]
@@ -186,6 +191,19 @@ def get_products():
                     "priceName": price["price_list"],
                     "price": price["price_list_rate"]
                 })
+
+        # Add taxes data
+        for tax in taxes_data:
+            item_code = tax["parent"]  # parent field contains the item_code
+            if item_code in products:
+                tax_info = {
+                    "item_tax_template": tax["item_tax_template"],
+                    "tax_category": tax["tax_category"],
+                    "valid_from": tax["valid_from"],
+                    "minimum_net_rate": tax["minimum_net_rate"],
+                    "maximum_net_rate": tax["maximum_net_rate"]
+                }
+                products[item_code]["taxes"].append(tax_info)
         
         # Compile final products list
         final_products = []
@@ -197,7 +215,8 @@ def get_products():
                 "groupname": detail["item_group"],
                 "maintainstock": detail["is_stock_item"],
                 "warehouses": products[item_code]["warehouses"],
-                "prices": products[item_code]["prices"]
+                "prices": products[item_code]["prices"],
+                "taxes": products[item_code]["taxes"]
             }
             final_products.append(final_product)
         
