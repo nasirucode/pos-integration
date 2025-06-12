@@ -153,6 +153,81 @@ def get_pos_profile():
 
     return response
 
+# @frappe.whitelist()
+# def get_products():
+#     try:
+#         # Fetch all necessary data for products in the "Products" item group
+#         product_details = frappe.get_all("Item", 
+#             filters={
+#                 'item_group': ["=", 'Products']
+#             },
+#             fields=["name","item_name", "item_code", "item_group", "is_stock_item"]
+#         )
+#         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
+#         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
+        
+#         # Initialize products dictionary with all items
+#         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
+
+#         # Fetch taxes data from Item Tax child table
+#         taxes_data = frappe.get_all("Item Tax", 
+#             fields=["parent", "item_tax_template", "tax_category", "valid_from", "minimum_net_rate", "maximum_net_rate"],
+#             filters={"parenttype": "Item"}
+#         )
+#         # Add warehouse data
+#         for product in products_data:
+#             item_code = product["item_code"]
+#             if item_code in products:
+#                 products[item_code]["warehouses"].append({
+#                     "warehouse": product["warehouse"],
+#                     "qtyOnHand": product["actual_qty"]
+#                 })
+        
+#         # Add price list data
+#         for price in price_lists:
+#             item_code = price["item_code"]
+#             if item_code in products:
+#                 products[item_code]["prices"].append({
+#                     "priceName": price["price_list"],
+#                     "price": price["price_list_rate"]
+#                 })
+
+#         # Add taxes data
+#         for tax in taxes_data:
+#             item_code = tax["parent"]  # parent field contains the item_code
+#             if item_code in products:
+#                 tax_info = {
+#                     "item_tax_template": tax["item_tax_template"],
+#                     "tax_category": tax["tax_category"],
+#                     "valid_from": tax["valid_from"],
+#                     "minimum_net_rate": tax["minimum_net_rate"],
+#                     "maximum_net_rate": tax["maximum_net_rate"]
+#                 }
+#                 products[item_code]["taxes"].append(tax_info)
+        
+#         # Compile final products list
+#         final_products = []
+#         for detail in product_details:
+#             item_code = detail["item_code"]
+#             final_product = {
+#                 "itemcode": item_code,
+#                 "itemname": detail["item_name"],
+#                 "groupname": detail["item_group"],
+#                 "maintainstock": detail["is_stock_item"],
+#                 "warehouses": products[item_code]["warehouses"],
+#                 "prices": products[item_code]["prices"],
+#                 "taxes": products[item_code]["taxes"]
+#             }
+#             final_products.append(final_product)
+        
+#         create_response("200", {"products": final_products})
+#         return
+#     except Exception as e:
+#         create_response("417", {"error": str(e)})
+#         frappe.log_error(message=str(e), title="Error fetching products data")
+#         return
+
+
 @frappe.whitelist()
 def get_products():
     try:
@@ -163,17 +238,13 @@ def get_products():
             },
             fields=["name","item_name", "item_code", "item_group", "is_stock_item"]
         )
+        
         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
         
         # Initialize products dictionary with all items
-        products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
-
-        # Fetch taxes data from Item Tax child table
-        taxes_data = frappe.get_all("Item Tax", 
-            fields=["parent", "item_tax_template", "tax_category", "valid_from", "minimum_net_rate", "maximum_net_rate"],
-            filters={"parenttype": "Item"}
-        )
+        products = {detail['item_code']: {"warehouses": [], "prices": [], "taxes": []} for detail in product_details}
+        
         # Add warehouse data
         for product in products_data:
             item_code = product["item_code"]
@@ -191,19 +262,30 @@ def get_products():
                     "priceName": price["price_list"],
                     "price": price["price_list_rate"]
                 })
-
-        # Add taxes data
-        for tax in taxes_data:
-            item_code = tax["parent"]  # parent field contains the item_code
-            if item_code in products:
-                tax_info = {
-                    "item_tax_template": tax["item_tax_template"],
-                    "tax_category": tax["tax_category"],
-                    "valid_from": tax["valid_from"],
-                    "minimum_net_rate": tax["minimum_net_rate"],
-                    "maximum_net_rate": tax["maximum_net_rate"]
-                }
-                products[item_code]["taxes"].append(tax_info)
+        
+        # Fetch taxes for each item individually
+        for detail in product_details:
+            item_code = detail["item_code"]
+            try:
+                # Get the full Item document to access child table
+                item_doc = frappe.get_doc("Item", item_code)
+                
+                # Access the taxes child table
+                if hasattr(item_doc, 'taxes') and item_doc.taxes:
+                    for tax_row in item_doc.taxes:
+                        tax_info = {
+                            "item_tax_template": getattr(tax_row, 'item_tax_template', ''),
+                            "tax_category": getattr(tax_row, 'tax_category', ''),
+                            "valid_from": getattr(tax_row, 'valid_from', ''),
+                            "minimum_net_rate": getattr(tax_row, 'minimum_net_rate', 0),
+                            "maximum_net_rate": getattr(tax_row, 'maximum_net_rate', 0)
+                        }
+                        products[item_code]["taxes"].append(tax_info)
+            except Exception as tax_error:
+                # If there's an error fetching taxes for this item, continue with empty taxes
+                frappe.log_error(message=f"Error fetching taxes for item {item_code}: {str(tax_error)}", 
+                               title="Item Tax Fetch Error")
+                continue
         
         # Compile final products list
         final_products = []
@@ -222,10 +304,12 @@ def get_products():
         
         create_response("200", {"products": final_products})
         return
+        
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching products data")
         return
+
 
 @frappe.whitelist()
 def get_sales_invoice(user=None):
