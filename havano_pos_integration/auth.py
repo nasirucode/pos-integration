@@ -89,7 +89,7 @@ def login(usr,pwd, timezone):
             },
             fields=["name", "customer_name", "customer_group", "territory", "custom_cost_center"]
         )
-
+    default_company_doc = None
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 

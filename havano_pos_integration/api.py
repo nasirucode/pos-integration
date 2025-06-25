@@ -153,89 +153,24 @@ def get_pos_profile():
 
     return response
 
-# @frappe.whitelist()
-# def get_products():
-#     try:
-#         # Fetch all necessary data for products in the "Products" item group
-#         product_details = frappe.get_all("Item", 
-#             filters={
-#                 'item_group': ["=", 'Products']
-#             },
-#             fields=["name","item_name", "item_code", "item_group", "is_stock_item"]
-#         )
-#         products_data = frappe.get_all("Bin", fields=["item_code", "warehouse", "actual_qty"])
-#         price_lists = frappe.get_all("Item Price", fields=["price_list", "price_list_rate", "item_code"])
-        
-#         # Initialize products dictionary with all items
-#         products = {detail['item_code']: {"warehouses": [], "prices": []} for detail in product_details}
-
-#         # Fetch taxes data from Item Tax child table
-#         taxes_data = frappe.get_all("Item Tax", 
-#             fields=["parent", "item_tax_template", "tax_category", "valid_from", "minimum_net_rate", "maximum_net_rate"],
-#             filters={"parenttype": "Item"}
-#         )
-#         # Add warehouse data
-#         for product in products_data:
-#             item_code = product["item_code"]
-#             if item_code in products:
-#                 products[item_code]["warehouses"].append({
-#                     "warehouse": product["warehouse"],
-#                     "qtyOnHand": product["actual_qty"]
-#                 })
-        
-#         # Add price list data
-#         for price in price_lists:
-#             item_code = price["item_code"]
-#             if item_code in products:
-#                 products[item_code]["prices"].append({
-#                     "priceName": price["price_list"],
-#                     "price": price["price_list_rate"]
-#                 })
-
-#         # Add taxes data
-#         for tax in taxes_data:
-#             item_code = tax["parent"]  # parent field contains the item_code
-#             if item_code in products:
-#                 tax_info = {
-#                     "item_tax_template": tax["item_tax_template"],
-#                     "tax_category": tax["tax_category"],
-#                     "valid_from": tax["valid_from"],
-#                     "minimum_net_rate": tax["minimum_net_rate"],
-#                     "maximum_net_rate": tax["maximum_net_rate"]
-#                 }
-#                 products[item_code]["taxes"].append(tax_info)
-        
-#         # Compile final products list
-#         final_products = []
-#         for detail in product_details:
-#             item_code = detail["item_code"]
-#             final_product = {
-#                 "itemcode": item_code,
-#                 "itemname": detail["item_name"],
-#                 "groupname": detail["item_group"],
-#                 "maintainstock": detail["is_stock_item"],
-#                 "warehouses": products[item_code]["warehouses"],
-#                 "prices": products[item_code]["prices"],
-#                 "taxes": products[item_code]["taxes"]
-#             }
-#             final_products.append(final_product)
-        
-#         create_response("200", {"products": final_products})
-#         return
-#     except Exception as e:
-#         create_response("417", {"error": str(e)})
-#         frappe.log_error(message=str(e), title="Error fetching products data")
-#         return
-
 
 @frappe.whitelist()
 def get_products():
     try:
+        # Get form data
+        data = frappe.local.form_dict
+        
+        # Get item_group from request body, if provided
+        item_group = data.get("item_group")
+        
+        # Build filters based on whether item_group is provided
+        filters = {}
+        if item_group:
+            filters['item_group'] = ["=", item_group]
+
         # Fetch all necessary data for products in the "Products" item group
         product_details = frappe.get_all("Item", 
-            filters={
-                'item_group': ["=", 'Products']
-            },
+            filters=filters,
             fields=["name","item_name", "item_code", "item_group", "is_stock_item"]
         )
         
@@ -405,16 +340,276 @@ def get_customer():
     try:
         default_cost_center = frappe.db.get_value("User Permission", {"user": frappe.session.user, "allow": "Cost Center", "is_default": 1}, "for_value")       
         # Fetch customer details with default price list
-        customers = frappe.get_all("Customer", filters = {"custom_cost_center": default_cost_center, "default_price_list": ["!=", ""]} ,fields = ["customer_name","customer_type","custom_cost_center","custom_warehouse","gender","customer_pos_id","default_price_list"])
+        customers = frappe.get_all("Customer", filters = {"custom_cost_center": default_cost_center, "default_price_list": ["!=", ""]} ,fields = ["name", "customer_name","customer_type","custom_cost_center","custom_warehouse","gender","customer_pos_id","default_price_list"])
+        
         for customer in customers:
             # Fetch item prices for each customer
             customer.items = frappe.get_all("Item Price", filters = {"price_list":customer.default_price_list}, fields = ["item_code","item_name","price_list_rate"])
+            
+            # Get customer balance (receivables)
+            try:
+                # Method 1: Using frappe.db.sql to get outstanding amount from GL Entry
+                customer_balance = frappe.db.sql("""
+                    SELECT IFNULL(SUM(debit - credit), 0) as balance
+                    FROM `tabGL Entry`
+                    WHERE party_type = 'Customer' 
+                    AND party = %s 
+                    AND is_cancelled = 0
+                """, (customer.name,))[0][0] or 0
+                
+                customer.balance = customer_balance
+                
+                # Alternative Method 2: Get outstanding amount from Sales Invoice
+                outstanding_invoices = frappe.db.sql("""
+                    SELECT IFNULL(SUM(outstanding_amount), 0) as outstanding
+                    FROM `tabSales Invoice`
+                    WHERE customer = %s 
+                    AND docstatus = 1
+                    AND outstanding_amount > 0
+                """, (customer.name,))[0][0] or 0
+                
+                customer.outstanding_amount = outstanding_invoices
+                
+                # # Method 3: Using ERPNext's get_balance_on function for more accuracy
+                # from erpnext.accounts.utils import get_balance_on
+                # from frappe.utils import today
+                
+                # # Get the receivable account for this customer
+                # receivable_account = frappe.db.get_value("Customer", customer.name, "accounts")
+                # if not receivable_account:
+                #     # Get default receivable account from company
+                #     company = frappe.db.get_value("Customer", customer.name, "default_company") or frappe.defaults.get_user_default("Company")
+                #     receivable_account = frappe.db.get_value("Company", company, "default_receivable_account")
+                
+                # if receivable_account:
+                #     account_balance = get_balance_on(
+                #         account=receivable_account,
+                #         # date=today(),
+                #         party_type="Customer",
+                #         party=customer.name
+                #     )
+                #     customer.account_balance = account_balance
+                # else:
+                #     customer.account_balance = 0
+                    
+            except Exception as balance_error:
+                frappe.log_error(message=f"Error fetching balance for customer {customer.name}: {str(balance_error)}", 
+                               title="Customer Balance Fetch Error")
+                customer.balance = 0
+                customer.outstanding_amount = 0
+                # customer.account_balance = 0
+            
+            # Get customer loyalty points
+            try:
+                # Method 1: Get current loyalty points from Loyalty Point Entry
+                loyalty_points = frappe.db.sql("""
+                    SELECT IFNULL(SUM(loyalty_points), 0) as total_points
+                    FROM `tabLoyalty Point Entry`
+                    WHERE customer = %s 
+                    AND docstatus = 1
+                    AND expiry_date >= CURDATE()
+                """, (customer.name,))[0][0] or 0
+                
+                customer.loyalty_points = loyalty_points
+                
+                # Method 2: Get loyalty points details with expiry dates
+                loyalty_point_details = frappe.db.sql("""
+                    SELECT 
+                        loyalty_points,
+                        expiry_date,
+                        loyalty_program,
+                        invoice_type,
+                        invoice,
+                        posting_date
+                    FROM `tabLoyalty Point Entry`
+                    WHERE customer = %s 
+                    AND docstatus = 1
+                    AND expiry_date >= CURDATE()
+                    ORDER BY expiry_date ASC
+                """, (customer.name,), as_dict=True)
+                
+                customer.loyalty_point_details = loyalty_point_details
+                
+                # Method 3: Get loyalty program information for the customer
+                loyalty_program_info = frappe.db.sql("""
+                    SELECT DISTINCT
+                        lpe.loyalty_program,
+                        lp.loyalty_program_name,
+                        lp.loyalty_program_type,
+                        lp.conversion_factor
+                    FROM `tabLoyalty Point Entry` lpe
+                    LEFT JOIN `tabLoyalty Program` lp ON lpe.loyalty_program = lp.name
+                    WHERE lpe.customer = %s 
+                    AND lpe.docstatus = 1
+                """, (customer.name,), as_dict=True)
+                
+                customer.loyalty_programs = loyalty_program_info
+                
+                # Method 4: Get redeemed loyalty points
+                redeemed_points = frappe.db.sql("""
+                    SELECT IFNULL(SUM(ABS(loyalty_points)), 0) as redeemed_points
+                    FROM `tabLoyalty Point Entry`
+                    WHERE customer = %s 
+                    AND docstatus = 1
+                    AND loyalty_points < 0
+                """, (customer.name,))[0][0] or 0
+                
+                customer.redeemed_loyalty_points = redeemed_points
+                
+                # Calculate net available loyalty points
+                earned_points = frappe.db.sql("""
+                    SELECT IFNULL(SUM(loyalty_points), 0) as earned_points
+                    FROM `tabLoyalty Point Entry`
+                    WHERE customer = %s 
+                    AND docstatus = 1
+                    AND loyalty_points > 0
+                    AND expiry_date >= CURDATE()
+                """, (customer.name,))[0][0] or 0
+                
+                customer.earned_loyalty_points = earned_points
+                customer.net_loyalty_points = earned_points - redeemed_points
+                
+            except Exception as loyalty_error:
+                frappe.log_error(message=f"Error fetching loyalty points for customer {customer.name}: {str(loyalty_error)}", 
+                               title="Customer Loyalty Points Fetch Error")
+                customer.loyalty_points = 0
+                customer.loyalty_point_details = []
+                customer.loyalty_programs = []
+                customer.redeemed_loyalty_points = 0
+                customer.earned_loyalty_points = 0
+                customer.net_loyalty_points = 0
+        
         create_response("200", customers)
         return
     except Exception as e:
         create_response("417", {"error": str(e)})
         frappe.log_error(message=str(e), title="Error fetching customer data")
         return
+
+@frappe.whitelist()
+def redeem_loyalty_points():
+    try:
+        # Get form data
+        data = frappe.local.form_dict
+        
+        # Check for required fields
+        required_fields = ["customer", "loyalty_points", "company"]
+        for field in required_fields:
+            if field not in data:
+                create_response("417", {"error": f"Missing required field: {field}"})
+                return
+
+        customer = data.get("customer")
+        points_to_redeem = float(data.get("loyalty_points", 0))
+        company = data.get("company")
+        loyalty_program = data.get("loyalty_program")  # Optional
+        sales_invoice = data.get("sales_invoice")  # Optional - if redeeming against specific invoice
+        
+        # Validate points to redeem
+        if points_to_redeem <= 0:
+            create_response("417", {"error": "Points to redeem must be greater than 0"})
+            return
+        
+        # Check if customer exists
+        if not frappe.db.exists("Customer", customer):
+            create_response("417", {"error": f"Customer {customer} does not exist"})
+            return
+        
+        # Get available loyalty points for the customer
+        available_points = frappe.db.sql("""
+            SELECT IFNULL(SUM(loyalty_points), 0) as available_points
+            FROM `tabLoyalty Point Entry`
+            WHERE customer = %s 
+            AND docstatus = 1
+            AND expiry_date >= CURDATE()
+            AND loyalty_points > 0
+        """, (customer,))[0][0] or 0
+        
+        # Check if customer has enough points
+        if points_to_redeem > available_points:
+            create_response("417", {
+                "error": f"Insufficient loyalty points. Available: {available_points}, Requested: {points_to_redeem}"
+            })
+            return
+        
+        # Get loyalty program if not provided
+        if not loyalty_program:
+            loyalty_program_data = frappe.db.sql("""
+                SELECT DISTINCT loyalty_program
+                FROM `tabLoyalty Point Entry`
+                WHERE customer = %s 
+                AND docstatus = 1
+                AND loyalty_points > 0
+                LIMIT 1
+            """, (customer,))
+            
+            if loyalty_program_data:
+                loyalty_program = loyalty_program_data[0][0]
+            else:
+                create_response("417", {"error": "No loyalty program found for customer"})
+                return
+        
+        # Get loyalty program details for conversion factor
+        loyalty_program_doc = frappe.get_doc("Loyalty Program", loyalty_program)
+        conversion_factor = loyalty_program_doc.conversion_factor or 1
+        
+        # Calculate redemption amount
+        redemption_amount = points_to_redeem * conversion_factor
+        
+        # Create Loyalty Point Entry for redemption (negative points)
+        loyalty_point_entry = frappe.get_doc({
+            "doctype": "Loyalty Point Entry",
+            "customer": customer,
+            "loyalty_program": loyalty_program,
+            "loyalty_points": -points_to_redeem,  # Negative for redemption
+            "posting_date": data.get("posting_date", frappe.utils.today()),
+            "company": company,
+            "expiry_date": frappe.utils.add_years(frappe.utils.today(), 10),  # Far future date for redeemed points
+            "invoice_type": "Sales Invoice" if sales_invoice else "",
+            "invoice": sales_invoice or "",
+            "redemption_amount": redemption_amount
+        })
+        
+        # Insert and submit the loyalty point entry
+        loyalty_point_entry.insert()
+        loyalty_point_entry.submit()
+        
+        # Commit the transaction
+        frappe.db.commit()
+        
+        # Get updated loyalty points balance
+        updated_balance = frappe.db.sql("""
+            SELECT IFNULL(SUM(loyalty_points), 0) as balance
+            FROM `tabLoyalty Point Entry`
+            WHERE customer = %s 
+            AND docstatus = 1
+            AND expiry_date >= CURDATE()
+        """, (customer,))[0][0] or 0
+        
+        response_data = {
+            "message": "Loyalty points redeemed successfully",
+            "redemption_details": {
+                "customer": customer,
+                "points_redeemed": points_to_redeem,
+                "redemption_amount": redemption_amount,
+                "loyalty_program": loyalty_program,
+                "conversion_factor": conversion_factor,
+                "loyalty_point_entry": loyalty_point_entry.name,
+                "previous_balance": available_points,
+                "current_balance": updated_balance,
+                "posting_date": loyalty_point_entry.posting_date
+            }
+        }
+        
+        create_response("200", response_data)
+        return
+        
+    except Exception as e:
+        frappe.db.rollback()
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error redeeming loyalty points")
+        return
+
 
 @frappe.whitelist()
 def get_account():
