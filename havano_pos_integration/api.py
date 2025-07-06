@@ -169,7 +169,7 @@ def get_products():
         )
         item_group_list = [ig["for_value"] for ig in item_groups]
         # Build filters based on whether item_group is provided
-        filters = {"custom_send_to_havano": 1}
+        filters = {}
         if item_group_list:
             filters['item_group'] = ["in", item_group_list]
         # if user_cost_center:
