@@ -93,6 +93,12 @@ def login(usr,pwd, timezone):
     default_company = frappe.db.get_single_value('Global Defaults','default_company')
     if default_company:
         default_company_doc = frappe.get_doc("Company" , default_company) 
+    
+    company_info = {
+        "name": default_company_doc.name if default_company_doc else "",
+        "email": default_company_doc.email if default_company_doc else "",
+        "website": default_company_doc.website if default_company_doc else ""
+    }
 
     frappe.response["user"] =   {
         "first_name": escape_html(user.first_name or ""),
@@ -109,11 +115,7 @@ def login(usr,pwd, timezone):
         "customers": customers,
         "warehouse_items": warehouse_items,
         "time_zone": f"{local_tz}{erpnext_tz}",
-        "company" : {
-            "name" : default_company_doc.name or "",
-            "email" : default_company_doc.email or "",
-            "website" : default_company_doc.website or ""
-        },
+        "company" : company_info,
     }
     frappe.response["token_string"] = token_string
     frappe.response["token"] =  base64.b64encode(token_string.encode("ascii")).decode("utf-8")

@@ -161,13 +161,19 @@ def get_products():
         data = frappe.local.form_dict
         
         # Get item_group from request body, if provided
-        item_group = data.get("item_group")
-        
+        # item_group = data.get("item_group")
+        item_groups = frappe.get_all(
+            "User Permission",
+            filters={"user": frappe.session.user, "allow": "Item Group"},
+            fields=["for_value"]
+        )
+        item_group_list = [ig["for_value"] for ig in item_groups]
         # Build filters based on whether item_group is provided
-        filters = {}
-        if item_group:
-            filters['item_group'] = ["=", item_group]
-
+        filters = {"custom_send_to_havano": 1}
+        if item_group_list:
+            filters['item_group'] = ["in", item_group_list]
+        # if user_cost_center:
+        #     filters['cost_center'] = ["=", user_cost_center]
         # Fetch all necessary data for products in the "Products" item group
         product_details = frappe.get_all("Item", 
             filters=filters,
@@ -237,7 +243,7 @@ def get_products():
             }
             final_products.append(final_product)
         
-        create_response("200", {"products": final_products})
+        create_response("200", {"Total Products": len(final_products), "products": final_products})
         return
         
     except Exception as e:

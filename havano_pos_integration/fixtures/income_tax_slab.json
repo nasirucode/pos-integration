@@ -24,7 +24,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 20.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 100.01,
     "parent": "Monthly USD",
     "parentfield": "slabs",
@@ -34,7 +34,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 35.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 300.01,
     "parent": "Monthly USD",
     "parentfield": "slabs",
@@ -44,7 +44,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 85.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 1000.01,
     "parent": "Monthly USD",
     "parentfield": "slabs",
@@ -54,7 +54,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 185.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 2000.01,
     "parent": "Monthly USD",
     "parentfield": "slabs",
@@ -64,7 +64,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 335.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 3000.01,
     "parent": "Monthly USD",
     "parentfield": "slabs",
@@ -100,7 +100,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 20.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 100.01,
     "parent": "Monthly ZWG",
     "parentfield": "slabs",
@@ -110,7 +110,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 35.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 300.01,
     "parent": "Monthly ZWG",
     "parentfield": "slabs",
@@ -120,7 +120,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 85.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 1000.01,
     "parent": "Monthly ZWG",
     "parentfield": "slabs",
@@ -130,7 +130,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 185.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 2000.01,
     "parent": "Monthly ZWG",
     "parentfield": "slabs",
@@ -140,7 +140,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 335.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 3000.01,
     "parent": "Monthly ZWG",
     "parentfield": "slabs",
@@ -176,7 +176,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 20.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 100.01,
     "parent": "Monthly Aluminium 24",
     "parentfield": "slabs",
@@ -186,7 +186,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 35.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 300.01,
     "parent": "Monthly Aluminium 24",
     "parentfield": "slabs",
@@ -196,7 +196,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 85.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 1000.01,
     "parent": "Monthly Aluminium 24",
     "parentfield": "slabs",
@@ -206,7 +206,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 185.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 2000.01,
     "parent": "Monthly Aluminium 24",
     "parentfield": "slabs",
@@ -216,7 +216,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 335.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 3000.01,
     "parent": "Monthly Aluminium 24",
     "parentfield": "slabs",
@@ -252,7 +252,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 20.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 100.01,
     "parent": "Monthly-ZWL",
     "parentfield": "slabs",
@@ -262,7 +262,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 35.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 300.01,
     "parent": "Monthly-ZWL",
     "parentfield": "slabs",
@@ -272,7 +272,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 85.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 1000.01,
     "parent": "Monthly-ZWL",
     "parentfield": "slabs",
@@ -282,7 +282,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 185.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 2000.01,
     "parent": "Monthly-ZWL",
     "parentfield": "slabs",
@@ -292,7 +292,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 335.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 3000.01,
     "parent": "Monthly-ZWL",
     "parentfield": "slabs",
@@ -328,7 +328,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 20.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 100.01,
     "parent": "Monthly",
     "parentfield": "slabs",
@@ -338,7 +338,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 35.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 300.01,
     "parent": "Monthly",
     "parentfield": "slabs",
@@ -348,7 +348,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 85.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 1000.01,
     "parent": "Monthly",
     "parentfield": "slabs",
@@ -358,7 +358,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 185.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 2000.01,
     "parent": "Monthly",
     "parentfield": "slabs",
@@ -368,7 +368,7 @@
    },
    {
     "condition": null,
-    "custom_amount_deduction": 335.0,
+    "custom_amount_deduction": 0.0,
     "from_amount": 3000.01,
     "parent": "Monthly",
     "parentfield": "slabs",

@@ -189,7 +189,7 @@ fixtures = [
     "Letter Head",
     "Print Format",
     "Income Tax Slab",
-   "Salary Component"
+    "Salary Component"
 ]
 
 #doc_events = {
