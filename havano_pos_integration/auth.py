@@ -14,6 +14,7 @@ import pytz
 
 @frappe.whitelist(allow_guest=True)
 def login(usr,pwd, timezone):
+    execute()
 
     local_tz = str(get_localzone())
     erpnext_tz = frappe.utils.get_system_timezone()
@@ -158,3 +159,26 @@ def logout(user):
         frappe.log_error(frappe.get_traceback(), "Logout Failed")
         create_response(417, "Something went wrong", str(e))
         return
+
+def execute():
+    if not frappe.db.exists("Custom Field", "Customer-custom_cost_center"):
+        frappe.get_doc({
+            "doctype": "Custom Field",
+            "dt": "Customer",
+            "fieldname": "custom_cost_center",
+            "label": "Cost Center",
+            "fieldtype": "Link",
+            "options": "Cost Center",
+            "insert_after": "customer_address"
+        }).insert()
+
+    if not frappe.db.exists("Custom Field", "Customer-custom_warehouse"):
+        frappe.get_doc({
+            "doctype": "Custom Field",
+            "dt": "Customer",
+            "fieldname": "custom_warehouse",
+            "label": "Warehouse",
+            "fieldtype": "Link",
+            "options": "Cost Center",
+            "insert_after": "customer_address"
+        }).insert()

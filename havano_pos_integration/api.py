@@ -194,6 +194,13 @@ def get_products():
                     "warehouse": product["warehouse"],
                     "qtyOnHand": product["actual_qty"]
                 })
+
+        for item_code, pdata in products.items():
+            if not pdata["warehouses"]:
+                pdata["warehouses"].append({
+                    "warehouse": None,
+                    "qtyOnHand": 0
+                })
         
         # Add price list data
         for price in price_lists:
