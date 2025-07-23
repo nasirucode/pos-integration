@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-17 10:05:06.459140",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "super_user_pin"
+ ],
+ "fields": [
+  {
+   "fieldname": "super_user_pin",
+   "fieldtype": "Int",
+   "label": "Super User Pin"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-07-17 10:05:25.353332",
+ "modified_by": "Administrator",
+ "module": "Havano Pos Integration",
+ "name": "Havano Mobile",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

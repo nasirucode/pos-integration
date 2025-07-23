@@ -796,3 +796,87 @@ def submit_payment_entry(doc, method=None):
 def submit_sales_invoice(doc, method=None):
     # Submit Sales Invoice document
     doc.submit()
+
+@frappe.whitelist()
+def get_havano_mobile():
+    """API to get the Super User PIN from Havano Mobile single doctype."""
+    try:
+        doc = frappe.get_single("Havano Mobile")
+        pin = doc.super_user_pin if hasattr(doc, "super_user_pin") else None
+        if pin is not None:
+            create_response("200", {"super_user_pin": pin})
+        else:
+            create_response("404", {"error": "Super User PIN not found"})
+    except Exception as e:
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error fetching Super User PIN")
+    return
+
+@frappe.whitelist(allow_guest=False)
+def update_havano_mobile(new_pin):
+    """API to update the Super User PIN in Havano Mobile single doctype."""
+    try:
+        if not new_pin:
+            create_response("417", {"error": "New PIN is required"})
+            return
+        frappe.db.set_value("Havano Mobile", "Havano Mobile", "super_user_pin", new_pin)
+        frappe.db.commit()
+        create_response("200", {"message": "Super User PIN updated successfully"})
+    except Exception as e:
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error updating Super User PIN")
+    return
+
+
+@frappe.whitelist()
+def create_customer():
+    try:
+        data = frappe.local.form_dict
+
+        # Required fields for Customer creation
+        required_fields = ["customer_name", "customer_type", "customer_email", "customer_phone_number", "customer_tin", "customer_vat"]
+        for field in required_fields:
+            if not data.get(field):
+                create_response("417", {"error": f"Missing required field: {field}"})
+                return
+
+        # Create Customer
+        customer_doc = frappe.get_doc({
+            "doctype": "Customer",
+            "customer_name": data.get("customer_name"),
+            "customer_type": data.get("customer_type"),
+            # "company": data.get("company"),
+            "customer_email": data.get("customer_email", ""),
+            "customer_tin": data.get("customer_tin", ""),
+            "customer_vat": data.get("customer_vat", ""),
+            "customer_phone_number": data.get("customer_phone_number", ""),
+            "custom_trade_name": data.get("custom_trade_name", ""),
+            # Add more fields as needed
+        })
+        customer_doc.insert()
+        frappe.db.commit()
+
+        # Assign User Permission to the logged-in user
+        # user = frappe.session.user
+        # permission_doc = frappe.get_doc({
+        #     "doctype": "User Permission",
+        #     "user": user,
+        #     "allow": "Customer",
+        #     "for_value": customer_doc.name,
+        #     "apply_to_all_doctypes": 1
+        # })
+        # permission_doc.insert()
+        # frappe.db.commit()
+
+        create_response("200", {
+            "message": "Customer created successfully",
+            "customer": customer_doc.name,
+            # "user_permission": permission_doc.name
+        })
+        return
+
+    except Exception as e:
+        frappe.db.rollback()
+        create_response("417", {"error": str(e)})
+        frappe.log_error(message=str(e), title="Error creating customer and assigning permission")
+        return
