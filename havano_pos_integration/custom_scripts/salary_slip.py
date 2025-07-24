@@ -49,7 +49,12 @@ def calculate_components(doc):
         'ZIMDEF': 0.01,
         'Aids Levy': 0.03,
         'NEC Commercial': 0.01,
-        'NEC Mining': 0.0045
+        'NEC Mining': 0.0045,
+        'Cimas': 0.25,
+        'Funeral Policy': 0.25,
+        'UFAWUZ': 0.03,
+        'ZiBAWU': 0.02,
+        'LAPF': 0.06
     }
     
     # Fetch all tax rates from Company Tax Calculations
@@ -61,6 +66,13 @@ def calculate_components(doc):
     
     # Get Medical amount if it exists
     medical_amount = component_amounts.get('MEDICAL', {}).get('amount', 0) or 0
+    
+    # Get Basic Salary amount for UFAWUZ calculation
+    basic_salary = 0
+    for earning in doc.earnings:
+        if earning.salary_component == 'Basic Salary' or 'Basic':
+            basic_salary = earning.amount or 0
+            break
 
     income_after_medical = taxable_earnings - (medical_amount * 0.5)
     doc.custom_total_taxable_earnings = taxable_earnings
@@ -84,6 +96,21 @@ def calculate_components(doc):
     if component_exists_in_structure(structure, 'NEC Mining'):
         add_or_update_component(doc, component_amounts, 'NEC Mining', income_after_nssa * tax_components['NEC Mining'])
     
+    # Calculate UFAWUZ based on basic salary
+    if component_exists_in_structure(structure, 'UFAWUZ'):
+        add_or_update_component(doc, component_amounts, 'UFAWUZ', basic_salary * tax_components['UFAWUZ'])
+    
+    # Calculate ZiBAWU based on basic salary
+    if component_exists_in_structure(structure, 'ZiBAWU'):
+        add_or_update_component(doc, component_amounts, 'ZiBAWU', basic_salary * tax_components['ZiBAWU'])
+
+    # Calculate ZiBAWU based on basic salary
+    if component_exists_in_structure(structure, 'ZiBAWU'):
+        add_or_update_component(doc, component_amounts, 'ZiBAWU', basic_salary * tax_components['ZiBAWU'])
+
+    # Calculate LAPF based on basic salary
+    if component_exists_in_structure(structure, 'LAPF'):
+        add_or_update_component(doc, component_amounts, 'LAPF', basic_salary * tax_components['LAPF'])
     
     nssa_amount = component_amounts.get('NSSA', {}).get('amount', 0) or 0
 
