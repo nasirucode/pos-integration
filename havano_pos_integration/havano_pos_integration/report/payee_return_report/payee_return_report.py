@@ -37,7 +37,7 @@ def execute(filters=None):
     for slip in salary_slips:
         # Get Basic Salary
         basic = frappe.db.get_value("Salary Detail", 
-                                    {"parent": slip.name, "abbr": "BASIC"}, "amount") or 0
+                                    {"parent": slip.name, "salary_component": ["=", "Basic Salary"]}, "amount") or 0
 
         # Get LAPF Employee Contribution if exists
         lapf_emp = frappe.db.get_value("Salary Detail",
