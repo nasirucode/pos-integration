@@ -27,7 +27,7 @@ def execute(filters=None):
     salary_slips = frappe.db.sql("""
         SELECT ss.name, ss.employee, ss.start_date, ss.end_date,
                ss.company, ss.employee_name, ss.payroll_frequency,
-               ss.employee as emp_id, e.first_name, e.last_name, e.custom_national_id
+               ss.employee as emp_id, e.first_name, e.last_name, e.custom_national_id_no
         FROM `tabSalary Slip` ss
         JOIN `tabEmployee` e ON ss.employee = e.name
         WHERE ss.docstatus = 1 {conditions}
@@ -51,7 +51,7 @@ def execute(filters=None):
         data.append({
             "first_name": slip.first_name,
             "last_name": slip.last_name,
-            "national_id": slip.custom_national_id,
+            "national_id": slip.custom_national_id_no,
             "basic_salary": basic,
             "lapf_employee": lapf_emp,
             "lapf_employer": lapf_employer
